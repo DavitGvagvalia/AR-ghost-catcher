@@ -28,36 +28,32 @@ AR-ghost-catcher/
 
 ### **🎯 What You Need to Add:**
 
-## **1. 3D Models (GLB/GLTF format)**
+## **1. 3D Models (GLB/GLTF format) - NOW AUTOMATIC! 🎉**
 
 ### **Current Model:**
-- ✅ `ghost.glb` - Your ghost model is ready
+- ✅ `silly-ghost` - Your ghost model is ready and automatically loaded
 
-### **To Add More Models:**
-1. **Place your GLB/GLTF files** in the `models/` directory
-2. **Update `index.html`** in two places:
+### **To Add More Models (Super Easy!):**
+1. **Create a folder** in `models/` directory: `models/your-model-name/`
+2. **Place your GLB/GLTF file** as `model.glb` in that folder
+3. **Add to configuration** in `models/model-config.json`
+4. **Add to discovery list** in `js/model-loader.js`
+5. **That's it!** No HTML editing needed!
 
-**A. Add to Assets Section (around line 77):**
-```html
-<a-assets>
-    <a-asset-item id="ghost-model" src="models/ghost.glb"></a-asset-item>
-    <a-asset-item id="your-model" src="models/your-model.glb"></a-asset-item>
-    <!-- Add more models here -->
-</a-assets>
+**See `models/ADD-NEW-MODEL.md` for detailed instructions!**
+
+### **Example:**
+```
+models/
+├── silly-ghost/
+│   └── ghost.glb ✅
+├── dragon/
+│   └── model.glb (your new model)
+└── robot/
+    └── model.glb (another model)
 ```
 
-**B. Add 3D Entities (around line 63):**
-```html
-<!-- Your custom 3D model -->
-<a-entity 
-    id="your-model-1"
-    class="clickable custom-entity"
-    gltf-model="#your-model"
-    scale="0.5 0.5 0.5"
-    position="1 0 0"
-    animation__float="property: position; to: 1 0.5 0; dir: alternate; dur: 2000; loop: true;">
-</a-entity>
-```
+**All models will automatically appear in both AR and demo modes!**
 
 ## **2. AR Target Markers**
 

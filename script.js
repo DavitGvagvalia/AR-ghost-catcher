@@ -11,10 +11,20 @@ class ARGhostCatcher {
         this.init();
     }
     
-    init() {
+    async init() {
         this.setupEventListeners();
         this.setupAudio();
+        await this.loadModels();
         this.simulateLoading();
+    }
+
+    async loadModels() {
+        try {
+            await window.modelLoader.init();
+            console.log('✅ Models loaded successfully');
+        } catch (error) {
+            console.error('❌ Error loading models:', error);
+        }
     }
     
     setupEventListeners() {
@@ -76,7 +86,9 @@ class ARGhostCatcher {
                 
                 raycaster.setFromCamera(mouse, arScene.camera);
                 
-                const entities = arScene.querySelectorAll('.clickable');
+                // Get all clickable entities dynamically
+                const modelClasses = window.modelLoader ? window.modelLoader.getModelClasses() : '.clickable';
+                const entities = arScene.querySelectorAll(modelClasses);
                 const intersects = raycaster.intersectObjects(
                     entities.map(el => el.object3D)
                 );

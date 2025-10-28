@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR Ghost Catcher - Demo</title>
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Model Loader -->
+    <script src="js/model-loader.js"></script>
 </head>
 
 <body>
@@ -27,11 +30,8 @@
             <h3>🎃 Demo Mode</h3>
             <p>This is how your AR Ghost Catcher will look!</p>
             <p>Click on the creatures to catch them!</p>
-            <div class="demo-ghosts">
-                <div class="demo-ghost" data-type="ghost">👻</div>
-                <!-- Add your custom demo creatures here -->
-                <!-- Example: -->
-                <!-- <div class="demo-creature" data-type="your-model">🦄</div> -->
+            <div class="demo-ghosts" id="demo-creatures">
+                <!-- Demo creatures will be loaded dynamically here -->
             </div>
             <div class="demo-instructions">
                 <p>In the full AR version, you'll point your camera at a special image and these creatures will appear in 3D!</p>
@@ -484,7 +484,7 @@
             document.getElementById('score').textContent = score;
 
             // Reset all demo creatures
-            const creatures = document.querySelectorAll('.demo-ghost, .demo-creature');
+            const creatures = document.querySelectorAll('.demo-creature');
             creatures.forEach(creature => {
                 creature.style.display = 'block';
                 creature.classList.remove('disappearing');
@@ -517,15 +517,42 @@
 
             // Show completion message if all caught
             setTimeout(() => {
-                const remaining = document.querySelectorAll('.demo-ghost:not(.disappearing), .demo-creature:not(.disappearing)');
+                const remaining = document.querySelectorAll('.demo-creature:not(.disappearing)');
                 if (remaining.length === 0) {
                     alert('🎉 Great job! You caught all the creatures! In the full AR version, you\'ll be able to do this with real 3D models!');
                 }
             }, 1200);
         }
 
+        // Load demo creatures dynamically
+        async function loadDemoCreatures() {
+            try {
+                await window.modelLoader.init();
+                const modelInfo = window.modelLoader.getModelInfo();
+                
+                const container = document.getElementById('demo-creatures');
+                container.innerHTML = '';
+                
+                modelInfo.forEach(model => {
+                    const creature = document.createElement('div');
+                    creature.className = `demo-creature`;
+                    creature.setAttribute('data-type', model.id);
+                    creature.textContent = model.emoji;
+                    container.appendChild(creature);
+                });
+                
+                console.log(`✅ Loaded ${modelInfo.length} demo creatures`);
+            } catch (error) {
+                console.error('❌ Error loading demo creatures:', error);
+                // Fallback to default ghost
+                const container = document.getElementById('demo-creatures');
+                container.innerHTML = '<div class="demo-creature" data-type="ghost">👻</div>';
+            }
+        }
+
         // Event listeners
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadDemoCreatures();
             simulateLoading();
             
             // Permission popup event listeners
@@ -541,8 +568,7 @@
             
             // Make creatures clickable
             document.addEventListener('click', (e) => {
-                if (e.target.classList.contains('demo-ghost') || 
-                    e.target.classList.contains('demo-creature')) {
+                if (e.target.classList.contains('demo-creature')) {
                     handleCreatureClick(e);
                 }
             });

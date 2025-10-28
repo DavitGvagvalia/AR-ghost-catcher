@@ -1,0 +1,36 @@
+{
+  "models": [
+    {
+      "id": "silly-ghost",
+      "name": "Silly Ghost",
+      "folder": "silly-ghost",
+      "modelFile": "ghost.glb",
+      "scale": "0.5 0.5 0.5",
+      "position": "0 0 0",
+      "rotation": "0 0 0",
+      "animations": {
+        "float": {
+          "property": "position",
+          "to": "0 0.5 0",
+          "dir": "alternate",
+          "dur": 2000,
+          "loop": true
+        },
+        "rotate": {
+          "property": "rotation",
+          "to": "0 360 0",
+          "dur": 10000,
+          "loop": true
+        }
+      },
+      "interactive": true,
+      "emoji": "👻"
+    }
+  ],
+  "defaults": {
+    "scale": "0.5 0.5 0.5",
+    "position": "0 0 0",
+    "rotation": "0 0 0",
+    "interactive": true
+  }
+}

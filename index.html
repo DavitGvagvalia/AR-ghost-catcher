@@ -12,6 +12,9 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
     
+    <!-- Model Loader -->
+    <script src="js/model-loader.js"></script>
+    
     <!-- Custom JavaScript -->
     <script src="script.js"></script>
 </head>
@@ -49,36 +52,14 @@
             emitevents="true"
             cursor="fuse: false; rayOrigin: mouse;">
             
-            <!-- Ghost 3D Model -->
-            <a-entity 
-                id="ghost-1"
-                class="clickable ghost-entity"
-                gltf-model="#ghost-model"
-                scale="0.5 0.5 0.5"
-                position="0 0 0"
-                animation__float="property: position; to: 0 0.5 0; dir: alternate; dur: 2000; loop: true;"
-                animation__rotate="property: rotation; to: 0 360 0; dur: 10000; loop: true;">
-            </a-entity>
-            
-            <!-- Add your custom 3D models here -->
-            <!-- Example: -->
-            <!-- <a-entity 
-                id="model-1"
-                class="clickable custom-entity"
-                gltf-model="#your-model"
-                scale="0.5 0.5 0.5"
-                position="1 0 0"
-                animation__float="property: position; to: 1 0.5 0; dir: alternate; dur: 2000; loop: true;">
-            </a-entity> -->
+            <!-- 3D Models will be loaded dynamically here -->
+            <!-- Check js/model-loader.js for configuration -->
             
         </a-marker>
         
-        <!-- 3D Model Assets -->
+        <!-- 3D Model Assets will be loaded dynamically here -->
         <a-assets>
-            <a-asset-item id="ghost-model" src="models/ghost.glb"></a-asset-item>
-            <!-- Add your custom 3D models here -->
-            <!-- Example: -->
-            <!-- <a-asset-item id="your-model" src="models/your-model.glb"></a-asset-item> -->
+            <!-- Assets are added by model-loader.js -->
         </a-assets>
         
     </a-scene>
