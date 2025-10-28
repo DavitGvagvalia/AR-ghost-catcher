@@ -160,12 +160,33 @@ class ModelLoader {
     }
 
     addModelAsset(assetsContainer, model) {
-        const asset = document.createElement('a-asset-item');
-        asset.id = `${model.id}-model`;
-        asset.src = `${model.path}/${model.file}`;
-        assetsContainer.appendChild(asset);
+        // Check if asset already exists
+        const existingAsset = assetsContainer.querySelector(`#${model.id}-model`);
+        if (existingAsset) {
+            console.log(`ℹ️ Asset ${model.id}-model already exists, skipping...`);
+            return;
+        }
         
-        console.log(`📦 Added asset: ${model.id}-model`);
+        try {
+            // Create proper A-Frame asset element
+            const asset = document.createElement('a-asset-item');
+            asset.id = `${model.id}-model`;
+            asset.src = `${model.path}/${model.file}`;
+            
+            // Add error handling for asset loading
+            asset.addEventListener('error', (e) => {
+                console.error(`❌ Failed to load asset ${model.id}-model:`, e);
+            });
+            
+            asset.addEventListener('loaded', () => {
+                console.log(`✅ Asset ${model.id}-model loaded successfully`);
+            });
+            
+            assetsContainer.appendChild(asset);
+            console.log(`📦 Added asset: ${model.id}-model (${model.path}/${model.file})`);
+        } catch (error) {
+            console.error(`❌ Error creating asset for ${model.id}:`, error);
+        }
     }
 
     addModelEntity(marker, model) {
