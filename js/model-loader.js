@@ -4,9 +4,15 @@ class ModelLoader {
         this.models = [];
         this.loadedModels = new Map();
         this.modelConfig = null;
+        this.isInitialized = false;
     }
 
     async init() {
+        if (this.isInitialized) {
+            console.log('ℹ️ Model loader already initialized, skipping...');
+            return this.models;
+        }
+        
         try {
             // Load model configuration
             await this.loadModelConfig();
@@ -17,6 +23,7 @@ class ModelLoader {
             // Load all discovered models
             await this.loadAllModels();
             
+            this.isInitialized = true;
             console.log(`✅ Loaded ${this.models.length} 3D models dynamically`);
             return this.models;
         } catch (error) {
@@ -147,6 +154,13 @@ class ModelLoader {
     }
 
     addModelEntity(marker, model) {
+        // Check if entity already exists
+        const existingEntity = marker.querySelector(`#${model.id}-1`);
+        if (existingEntity) {
+            console.log(`ℹ️ Entity ${model.id}-1 already exists, skipping...`);
+            return;
+        }
+        
         const entity = document.createElement('a-entity');
         entity.id = `${model.id}-1`;
         entity.className = `clickable ${model.id}-entity`;
