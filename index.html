@@ -35,15 +35,15 @@
 
     <!-- Main AR Scene -->
     <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded
-        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;" id="ar-scene" style="display: block;">
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+        id="ar-scene" style="display: block;">
 
         <!-- Camera -->
         <a-camera gps-camera rotation-reader></a-camera>
 
         <!-- Image Target Marker -->
         <a-marker id="ar-marker" type="pattern" url="markers/ar-pattern.patt" raycaster="objects: .clickable"
-            emitevents="true" cursor="fuse: false; rayOrigin: mouse;" smooth="true" smoothCount="10"
-            smoothTolerance="0.01" smoothThreshold="5">
+            emitevents="true" cursor="fuse: false; rayOrigin: mouse;">
 
             <!-- 3D Models will be loaded dynamically here -->
             <!-- Check js/model-loader.js for configuration -->

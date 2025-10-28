@@ -7,10 +7,10 @@ class ARGhostCatcher {
         this.audioContext = null;
         this.interactionSound = null;
         this.ambientSound = null;
-        
+
         this.init();
     }
-    
+
     async init() {
         this.setupEventListeners();
         this.setupAudio();
@@ -26,46 +26,46 @@ class ARGhostCatcher {
             console.error('❌ Error loading models:', error);
         }
     }
-    
+
     setupEventListeners() {
         // Start AR button
         document.getElementById('start-ar').addEventListener('click', () => {
             this.startAR();
         });
-        
+
         // Reset scene button
         document.getElementById('reset-scene').addEventListener('click', () => {
             this.resetScene();
         });
-        
+
         // AR scene events
         const arScene = document.getElementById('ar-scene');
-        
+
         // When AR is ready
         arScene.addEventListener('arjs-video-loaded', () => {
             console.log('AR video loaded');
             this.hideLoadingScreen();
         });
-        
+
         // When marker is found
         arScene.addEventListener('markerFound', (event) => {
             console.log('Marker found:', event.detail);
             this.onMarkerFound();
         });
-        
+
         // When marker is lost
         arScene.addEventListener('markerLost', (event) => {
             console.log('Marker lost:', event.detail);
             this.onMarkerLost();
         });
-        
+
         // 3D model click events
         this.setup3DModelInteractions();
     }
-    
+
     setup3DModelInteractions() {
         const arScene = document.getElementById('ar-scene');
-        
+
         // Add click listeners to all clickable entities
         arScene.addEventListener('click', (event) => {
             const clickedEntity = event.detail.intersectedEl;
@@ -73,26 +73,26 @@ class ARGhostCatcher {
                 this.onEntityClicked(clickedEntity);
             }
         });
-        
+
         // Alternative: Use raycaster for better mobile support
         arScene.addEventListener('touchstart', (event) => {
             if (event.touches.length === 1) {
                 const touch = event.touches[0];
                 const raycaster = new THREE.Raycaster();
                 const mouse = new THREE.Vector2();
-                
+
                 mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
-                
+
                 raycaster.setFromCamera(mouse, arScene.camera);
-                
+
                 // Get all clickable entities dynamically
                 const modelClasses = window.modelLoader ? window.modelLoader.getModelClasses() : '.clickable';
                 const entities = arScene.querySelectorAll(modelClasses);
                 const intersects = raycaster.intersectObjects(
                     entities.map(el => el.object3D)
                 );
-                
+
                 if (intersects.length > 0) {
                     const clickedEntity = entities[intersects[0].object.userData.entityIndex];
                     this.onEntityClicked(clickedEntity);
@@ -100,28 +100,28 @@ class ARGhostCatcher {
             }
         });
     }
-    
+
     onEntityClicked(entity) {
         if (entity.classList.contains('disappearing')) return;
-        
+
         // Add disappearing animation
         entity.classList.add('disappearing');
-        
+
         // Play sound effect
         this.playInteractionSound();
-        
+
         // Update score
         this.updateScore();
-        
+
         // Remove entity after animation
         setTimeout(() => {
             entity.style.display = 'none';
         }, 1000);
-        
+
         // Add particle effect (optional)
         this.createParticleEffect(entity);
     }
-    
+
     createParticleEffect(entity) {
         // Simple particle effect using CSS
         const effect = document.createElement('div');
@@ -134,7 +134,7 @@ class ARGhostCatcher {
             pointer-events: none;
             animation: particle-explosion 1s ease-out forwards;
         `;
-        
+
         // Add particle animation CSS if not exists
         if (!document.getElementById('particle-styles')) {
             const style = document.createElement('style');
@@ -157,14 +157,14 @@ class ARGhostCatcher {
             `;
             document.head.appendChild(style);
         }
-        
+
         document.body.appendChild(effect);
-        
+
         // Position effect near the entity (approximate)
         const rect = entity.getBoundingClientRect();
         effect.style.left = rect.left + 'px';
         effect.style.top = rect.top + 'px';
-        
+
         // Remove effect after animation
         setTimeout(() => {
             if (effect.parentNode) {
@@ -172,24 +172,30 @@ class ARGhostCatcher {
             }
         }, 1000);
     }
-    
+
     onMarkerFound() {
         console.log('Spooky creatures detected!');
         this.playAmbientSound();
     }
-    
+
     onMarkerLost() {
         console.log('Spooky creatures disappeared...');
         this.pauseAmbientSound();
     }
-    
+
     startAR() {
         console.log('🚀 Starting AR...');
         this.isARActive = true;
         document.body.classList.add('ar-active');
         
-        // Request camera permission
-        navigator.mediaDevices.getUserMedia({ video: true })
+        // Request camera permission with optimized settings
+        navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                width: { ideal: 640 },
+                height: { ideal: 480 },
+                frameRate: { ideal: 30, max: 60 }
+            } 
+        })
             .then(() => {
                 console.log('✅ Camera access granted');
                 this.showARScene();
@@ -199,12 +205,12 @@ class ARGhostCatcher {
                 alert('Camera access is required for AR functionality. Please allow camera access and try again.');
             });
     }
-    
+
     showARScene() {
         const arScene = document.getElementById('ar-scene');
         // AR scene is already visible, just log
         console.log('📱 AR scene is active');
-        
+
         // Add debugging for AR events
         arScene.addEventListener('arjs-video-loaded', () => {
             console.log('📹 AR video loaded - camera ready');
@@ -218,25 +224,38 @@ class ARGhostCatcher {
             console.log('❌ Marker lost', event.detail);
         });
         
+        // Add error handling for AR issues
+        arScene.addEventListener('arjs-nft-loaded', () => {
+            console.log('🎯 AR pattern loaded successfully');
+        });
+        
+        // Handle AR errors
+        window.addEventListener('error', (event) => {
+            if (event.message && event.message.includes('Pattern Data read error')) {
+                console.error('❌ AR Pattern file is corrupted. Please generate a new pattern file.');
+                alert('AR Pattern file error. Please check the pattern file and try again.');
+            }
+        });
+
         // Check if models are loaded after a delay
         setTimeout(() => {
             const entities = arScene.querySelectorAll('a-entity[gltf-model]');
             console.log(`🎭 Found ${entities.length} 3D model entities:`, entities);
-            
+
             entities.forEach((entity, index) => {
                 console.log(`  ${index + 1}. ${entity.id} - ${entity.getAttribute('gltf-model')}`);
             });
-            
+
             // Check if marker exists
             const marker = arScene.querySelector('a-marker');
             console.log('🎯 AR Marker:', marker);
-            
+
             // Check if assets are loaded
             const assets = arScene.querySelectorAll('a-asset-item');
             console.log(`📦 Found ${assets.length} assets:`, assets);
         }, 3000);
     }
-    
+
     hideLoadingScreen() {
         const loadingScreen = document.getElementById('loading-screen');
         loadingScreen.style.opacity = '0';
@@ -244,23 +263,28 @@ class ARGhostCatcher {
             loadingScreen.style.display = 'none';
         }, 500);
     }
-    
+
     resetScene() {
         // Reset score
         this.score = 0;
         this.updateScore();
-        
+
         // Reset all entities
         const entities = document.querySelectorAll('.clickable');
         entities.forEach(entity => {
             entity.style.display = 'block';
             entity.classList.remove('disappearing');
         });
-        
+
         // Reset animations
         this.resetAnimations();
+        
+        // Force garbage collection if available
+        if (window.gc) {
+            window.gc();
+        }
     }
-    
+
     resetAnimations() {
         const entities = document.querySelectorAll('.clickable');
         entities.forEach(entity => {
@@ -269,29 +293,29 @@ class ARGhostCatcher {
             entity.setAttribute('animation__rotate', 'property: rotation; to: 0 360 0; dur: 10000; loop: true;');
         });
     }
-    
+
     updateScore() {
         this.score++;
         document.getElementById('score').textContent = this.score;
-        
+
         // Add score animation
         const scoreElement = document.getElementById('score');
         scoreElement.style.transform = 'scale(1.2)';
         scoreElement.style.color = '#ffd93d';
-        
+
         setTimeout(() => {
             scoreElement.style.transform = 'scale(1)';
             scoreElement.style.color = '#ffd93d';
         }, 200);
     }
-    
+
     setupAudio() {
         // Initialize audio context
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             this.interactionSound = document.getElementById('interaction-sound');
             this.ambientSound = document.getElementById('ambient-sound');
-            
+
             // Check if audio elements exist
             if (!this.interactionSound) {
                 console.log('ℹ️ No interaction sound file found - audio disabled');
@@ -303,56 +327,56 @@ class ARGhostCatcher {
             console.warn('Audio not supported:', error);
         }
     }
-    
+
     playInteractionSound() {
         if (this.interactionSound && this.audioContext) {
             // Resume audio context if suspended
             if (this.audioContext.state === 'suspended') {
                 this.audioContext.resume();
             }
-            
+
             this.interactionSound.currentTime = 0;
             this.interactionSound.play().catch(error => {
                 console.warn('Could not play interaction sound:', error);
             });
         }
     }
-    
+
     playAmbientSound() {
         if (this.ambientSound && this.audioContext) {
             if (this.audioContext.state === 'suspended') {
                 this.audioContext.resume();
             }
-            
+
             this.ambientSound.play().catch(error => {
                 console.warn('Could not play ambient sound:', error);
             });
         }
     }
-    
+
     pauseAmbientSound() {
         if (this.ambientSound) {
             this.ambientSound.pause();
         }
     }
-    
+
     simulateLoading() {
         // Simulate loading progress
         let progress = 0;
         const progressBar = document.querySelector('.loading-progress');
-        
+
         const loadingInterval = setInterval(() => {
             progress += Math.random() * 15;
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(loadingInterval);
-                
+
                 // Show start button after loading
                 setTimeout(() => {
                     document.getElementById('start-ar').style.display = 'block';
                 }, 500);
             }
-            
+
             if (progressBar) {
                 progressBar.style.width = progress + '%';
             }
