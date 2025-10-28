@@ -116,16 +116,17 @@ body {
 }
 
 .instructions h3 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: #ff6b6b;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
 .instructions p {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     color: #ccc;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    line-height: 1.4;
 }
 
 .controls {
@@ -140,18 +141,19 @@ body {
 
 .action-button {
     flex: 1;
-    padding: 12px 20px;
+    padding: 18px 25px;
     background: linear-gradient(45deg, #ff6b6b, #ff8e53);
     border: none;
     border-radius: 25px;
     color: white;
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 1.3rem;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    min-height: 60px;
 }
 
 .action-button:hover {
@@ -178,7 +180,7 @@ body {
 }
 
 .score span {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     color: #ffd93d;
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
@@ -217,39 +219,60 @@ body {
 /* Mobile Optimizations */
 @media (max-width: 768px) {
     .instructions {
-        top: 10px;
-        left: 10px;
-        right: 10px;
-        padding: 10px;
+        top: 15px;
+        left: 15px;
+        right: 15px;
+        padding: 20px;
     }
     
     .instructions h3 {
-        font-size: 1.2rem;
+        font-size: 1.8rem;
+        margin-bottom: 12px;
     }
     
     .instructions p {
-        font-size: 0.8rem;
+        font-size: 1.1rem;
+        margin-bottom: 6px;
     }
     
     .controls {
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
+        bottom: 15px;
+        left: 15px;
+        right: 15px;
+        gap: 8px;
     }
     
     .action-button {
-        padding: 10px 15px;
-        font-size: 0.9rem;
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        min-height: 55px;
     }
     
     .score {
-        top: 10px;
-        right: 10px;
-        padding: 8px 12px;
+        top: 15px;
+        right: 15px;
+        padding: 12px 18px;
     }
     
     .score span {
+        font-size: 1.2rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .instructions h3 {
+        font-size: 1.6rem;
+    }
+    
+    .instructions p {
         font-size: 1rem;
+    }
+    
+    .action-button {
+        font-size: 1rem;
+        padding: 12px 15px;
+        min-height: 50px;
     }
 }
 

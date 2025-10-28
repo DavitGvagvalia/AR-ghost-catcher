@@ -184,17 +184,18 @@ class ARGhostCatcher {
     }
     
     startAR() {
+        console.log('🚀 Starting AR...');
         this.isARActive = true;
         document.body.classList.add('ar-active');
         
         // Request camera permission
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(() => {
-                console.log('Camera access granted');
+                console.log('✅ Camera access granted');
                 this.showARScene();
             })
             .catch((error) => {
-                console.error('Camera access denied:', error);
+                console.error('❌ Camera access denied:', error);
                 alert('Camera access is required for AR functionality. Please allow camera access and try again.');
             });
     }
@@ -202,6 +203,38 @@ class ARGhostCatcher {
     showARScene() {
         const arScene = document.getElementById('ar-scene');
         arScene.style.display = 'block';
+        console.log('📱 AR scene displayed');
+        
+        // Add debugging for AR events
+        arScene.addEventListener('arjs-video-loaded', () => {
+            console.log('📹 AR video loaded - camera ready');
+        });
+        
+        arScene.addEventListener('markerFound', (event) => {
+            console.log('🎯 Marker found!', event.detail);
+        });
+        
+        arScene.addEventListener('markerLost', (event) => {
+            console.log('❌ Marker lost', event.detail);
+        });
+        
+        // Check if models are loaded after a delay
+        setTimeout(() => {
+            const entities = arScene.querySelectorAll('a-entity[gltf-model]');
+            console.log(`🎭 Found ${entities.length} 3D model entities:`, entities);
+            
+            entities.forEach((entity, index) => {
+                console.log(`  ${index + 1}. ${entity.id} - ${entity.getAttribute('gltf-model')}`);
+            });
+            
+            // Check if marker exists
+            const marker = arScene.querySelector('a-marker');
+            console.log('🎯 AR Marker:', marker);
+            
+            // Check if assets are loaded
+            const assets = arScene.querySelectorAll('a-asset-item');
+            console.log(`📦 Found ${assets.length} assets:`, assets);
+        }, 3000);
     }
     
     hideLoadingScreen() {

@@ -46,23 +46,29 @@ class ModelLoader {
 
         for (const modelId of knownModels) {
             const modelPath = `models/${modelId}`;
-            const modelFile = await this.findModelFile(modelPath);
+            const config = this.getModelConfig(modelId);
+            
+            // Try to find the model file using the config
+            const modelFile = await this.findModelFile(modelPath, config.file);
             
             if (modelFile) {
-                const config = this.getModelConfig(modelId);
                 this.models.push({
                     id: modelId,
                     path: modelPath,
                     file: modelFile,
                     config: config
                 });
-                console.log(`🔍 Discovered model: ${modelId}`);
+                console.log(`🔍 Discovered model: ${modelId} (${modelFile})`);
+            } else {
+                console.warn(`⚠️ Model file not found for: ${modelId}`);
             }
         }
     }
 
-    async findModelFile(modelPath) {
-        const possibleFiles = ['model.glb', 'model.gltf', 'ghost.glb', 'ghost.gltf'];
+    async findModelFile(modelPath, preferredFile = null) {
+        const possibleFiles = preferredFile ? 
+            [preferredFile, 'model.glb', 'model.gltf', 'ghost.glb', 'ghost.gltf'] :
+            ['model.glb', 'model.gltf', 'ghost.glb', 'ghost.gltf'];
         
         for (const file of possibleFiles) {
             try {
@@ -84,7 +90,8 @@ class ModelLoader {
         if (modelConfig) {
             return {
                 ...this.modelConfig.defaults,
-                ...modelConfig
+                ...modelConfig,
+                file: modelConfig.modelFile || modelConfig.file || 'model.glb' // Use modelFile from config
             };
         }
 
@@ -93,7 +100,8 @@ class ModelLoader {
             ...this.modelConfig.defaults,
             id: modelId,
             name: modelId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            emoji: '🎭'
+            emoji: '🎭',
+            file: 'model.glb'
         };
     }
 
