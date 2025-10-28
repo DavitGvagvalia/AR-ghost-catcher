@@ -133,11 +133,8 @@ class ModelLoader {
         }
 
         for (const model of this.models) {
-            // Add asset
+            // Add asset (entity will be created when asset loads)
             this.addModelAsset(assetsContainer, model);
-            
-            // Add entity
-            this.addModelEntity(marker, model);
         }
     }
 
@@ -168,10 +165,11 @@ class ModelLoader {
         }
         
         try {
-            // Create proper A-Frame asset element
-            const asset = document.createElement('a-asset-item');
-            asset.id = `${model.id}-model`;
-            asset.src = `${model.path}/${model.file}`;
+            // Create asset using innerHTML to avoid A-Frame parsing issues
+            const assetHTML = `<a-asset-item id="${model.id}-model" src="${model.path}/${model.file}"></a-asset-item>`;
+            assetsContainer.insertAdjacentHTML('beforeend', assetHTML);
+            
+            const asset = assetsContainer.querySelector(`#${model.id}-model`);
             
             // Add error handling for asset loading
             asset.addEventListener('error', (e) => {
@@ -180,16 +178,23 @@ class ModelLoader {
             
             asset.addEventListener('loaded', () => {
                 console.log(`✅ Asset ${model.id}-model loaded successfully`);
+                // Create entity after asset loads
+                this.createModelEntity(model);
             });
             
-            assetsContainer.appendChild(asset);
             console.log(`📦 Added asset: ${model.id}-model (${model.path}/${model.file})`);
         } catch (error) {
             console.error(`❌ Error creating asset for ${model.id}:`, error);
         }
     }
 
-    addModelEntity(marker, model) {
+    createModelEntity(model) {
+        const arScene = document.getElementById('ar-scene');
+        const marker = arScene.querySelector('a-marker');
+        if (!marker) {
+            console.error('❌ AR marker not found');
+            return;
+        }
         // Check if entity already exists
         const existingEntity = marker.querySelector(`#${model.id}-1`);
         if (existingEntity) {
