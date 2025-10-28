@@ -14,14 +14,12 @@ A dynamic Augmented Reality web application that lets you view and interact with
 
 ## Setup Instructions
 
-### 1. Create AR Pattern Markers
+### 1. AR Marker Ready ✅
 
-You need to create AR pattern markers for the app to work:
-
-1. Go to [AR.js Pattern Generator](https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html)
-2. Upload a spooky image (recommended: 512x512px)
-3. Download the generated `.patt` file
-4. Replace `markers/ar-pattern.patt` with your generated pattern
+Your AR marker is already set up and ready to use:
+- `markers/marker1.png` - Your AR marker image ✅ **READY**
+- The app uses image tracking (better than pattern markers)
+- Just point your camera at the marker image to see 3D models
 
 ### 2. Add 3D Models
 
@@ -29,11 +27,11 @@ Place your GLB/GLTF models in the `models/` directory:
 - `silly-ghost/` - Ghost 3D model ✅ **READY**
 - Add your custom models in folders (GLB/GLTF format)
 
-### 3. Add Sound Effects (Optional)
+### 3. Sound Effects Ready ✅
 
-To add sound effects, uncomment the audio elements in `index.html` and add your audio files:
-- `sounds/interaction.mp3` - Sound when models are interacted with
-- `sounds/ambient.mp3` - Background ambient sound
+Your sound effects are already set up:
+- `sounds/interaction.mp3` - Sound when models are interacted with ✅ **READY**
+- Audio is enabled and will play when you interact with 3D models
 
 ### 4. Deploy to Netlify
 

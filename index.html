@@ -7,7 +7,7 @@
     
     <!-- AR.js and Three.js -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
@@ -36,7 +36,7 @@
         vr-mode-ui="enabled: false;" 
         renderer="logarithmicDepthBuffer: true;"
         embedded 
-        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
         id="ar-scene"
         style="display: none;">
         
@@ -46,8 +46,8 @@
         <!-- Image Target Marker -->
         <a-marker 
             id="ar-marker" 
-            type="pattern" 
-            url="markers/ar-pattern.patt"
+            type="image" 
+            url="markers/marker1.png"
             raycaster="objects: .clickable"
             emitevents="true"
             cursor="fuse: false; rayOrigin: mouse;">
@@ -82,13 +82,13 @@
         </div>
     </div>
 
-    <!-- Audio Elements (add your sound files here) -->
-    <!-- <audio id="interaction-sound" preload="auto">
+    <!-- Audio Elements -->
+    <audio id="interaction-sound" preload="auto">
         <source src="sounds/interaction.mp3" type="audio/mpeg">
     </audio>
     
     <audio id="ambient-sound" preload="auto" loop>
         <source src="sounds/ambient.mp3" type="audio/mpeg">
-    </audio> -->
+    </audio>
 </body>
 </html>
