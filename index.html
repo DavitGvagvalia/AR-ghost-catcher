@@ -90,5 +90,50 @@
     <audio id="ambient-sound" preload="auto" loop>
         <source src="sounds/ambient.mp3" type="audio/mpeg">
     </audio>
+
+    <script>
+        // Simple loading handler that doesn't depend on AR.js events
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 AR Model Viewer starting...');
+            
+            // Start loading simulation immediately
+            let progress = 0;
+            const progressBar = document.querySelector('.loading-progress');
+            const startButton = document.getElementById('start-ar');
+            
+            const loadingInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    // Show start button
+                    if (startButton) {
+                        startButton.style.display = 'block';
+                    }
+                    
+                    // Auto-hide loading screen after 3 seconds
+                    setTimeout(() => {
+                        const loadingScreen = document.getElementById('loading-screen');
+                        if (loadingScreen) {
+                            loadingScreen.style.opacity = '0';
+                            setTimeout(() => {
+                                loadingScreen.style.display = 'none';
+                            }, 500);
+                        }
+                    }, 3000);
+                }
+                
+                if (progressBar) {
+                    progressBar.style.width = progress + '%';
+                }
+            }, 150);
+            
+            // Initialize the AR app
+            setTimeout(() => {
+                new ARGhostCatcher();
+            }, 1000);
+        });
+    </script>
 </body>
 </html>

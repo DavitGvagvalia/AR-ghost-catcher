@@ -17,15 +17,16 @@ A dynamic Augmented Reality web application that lets you view and interact with
 ### 1. AR Marker Ready ✅
 
 Your AR marker is already set up and ready to use:
-- `markers/marker1.png` - Your AR marker image ✅ **READY**
-- The app uses image tracking (better than pattern markers)
-- Just point your camera at the marker image to see 3D models
+- `markers/ar-pattern.patt` - Your AR pattern file ✅ **READY**
+- The app uses pattern tracking for reliable AR detection
+- Just point your camera at the pattern to see 3D models
 
-### 2. Add 3D Models
+### 2. 3D Models Ready ✅
 
-Place your GLB/GLTF models in the `models/` directory:
-- `silly-ghost/` - Ghost 3D model ✅ **READY**
-- Add your custom models in folders (GLB/GLTF format)
+Your 3D model is already set up and automatically loaded:
+- `silly-ghost/` - Ghost 3D model with textures ✅ **READY**
+- Models are loaded dynamically from the `models/` directory
+- To add more models, see the "Adding New Models" section below
 
 ### 3. Sound Effects Ready ✅
 
@@ -40,6 +41,36 @@ Your sound effects are already set up:
 3. Set build command to: `echo "Static site - no build needed"`
 4. Set publish directory to: `/` (root)
 5. Deploy!
+
+## Adding New Models
+
+To add new 3D models to your AR app:
+
+1. **Create a folder** in `models/` directory: `models/your-model-name/`
+2. **Place your GLB/GLTF file** as `model.glb` in that folder
+3. **Add to configuration** in `models/model-config.json`:
+   ```json
+   {
+     "id": "your-model",
+     "name": "Your Model",
+     "folder": "your-model-name",
+     "modelFile": "model.glb",
+     "scale": "0.5 0.5 0.5",
+     "position": "0 0 0",
+     "rotation": "0 0 0",
+     "interactive": true,
+     "emoji": "🦄"
+   }
+   ```
+4. **Add to discovery list** in `js/model-loader.js`:
+   ```javascript
+   const knownModels = [
+       'silly-ghost',
+       'your-model-name',  // Add your model here
+   ];
+   ```
+
+That's it! No HTML editing needed - models are loaded automatically.
 
 ## Usage
 
