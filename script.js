@@ -32,11 +32,6 @@ class ARGhostCatcher {
     }
 
     setupEventListeners() {
-        // Start AR button
-        document.getElementById('start-ar').addEventListener('click', () => {
-            this.startAR();
-        });
-
         // Reset scene button
         document.getElementById('reset-scene').addEventListener('click', () => {
             this.resetScene();
@@ -375,10 +370,7 @@ class ARGhostCatcher {
                 progress = 100;
                 clearInterval(loadingInterval);
 
-                // Show start button after loading
-                setTimeout(() => {
-                    document.getElementById('start-ar').style.display = 'block';
-                }, 500);
+                // AR starts automatically after loading
             }
 
             if (progressBar) {
