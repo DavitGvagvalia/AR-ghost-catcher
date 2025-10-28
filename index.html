@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AR Model Viewer</title>
-    
+
     <!-- AR.js and Three.js -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
-    
+
     <!-- Model Loader -->
     <script src="js/model-loader.js"></script>
-    
+
     <!-- Custom JavaScript -->
     <script src="script.js"></script>
 </head>
+
 <body>
     <!-- Loading Screen -->
     <div id="loading-screen">
@@ -32,51 +34,43 @@
     </div>
 
     <!-- Main AR Scene -->
-    <a-scene 
-        vr-mode-ui="enabled: false;" 
-        renderer="logarithmicDepthBuffer: true;"
-        embedded 
-        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-        id="ar-scene"
-        style="display: none;">
-        
+    <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;" id="ar-scene" style="display: block;">
+
         <!-- Camera -->
         <a-camera gps-camera rotation-reader></a-camera>
-        
+
         <!-- Image Target Marker -->
-        <a-marker 
-            id="ar-marker" 
-            type="pattern" 
-            url="markers/ar-pattern.patt"
-            raycaster="objects: .clickable"
-            emitevents="true"
-            cursor="fuse: false; rayOrigin: mouse;">
-            
+        <a-marker id="ar-marker" type="pattern" url="markers/ar-pattern.patt" raycaster="objects: .clickable"
+            emitevents="true" cursor="fuse: false; rayOrigin: mouse;" smooth="true" smoothCount="10"
+            smoothTolerance="0.01" smoothThreshold="5">
+
             <!-- 3D Models will be loaded dynamically here -->
             <!-- Check js/model-loader.js for configuration -->
-            
+
         </a-marker>
-        
+
         <!-- 3D Model Assets will be loaded dynamically here -->
         <a-assets>
             <!-- Assets are added by model-loader.js -->
         </a-assets>
-        
+
     </a-scene>
 
     <!-- UI Overlay -->
     <div id="ui-overlay">
         <div class="instructions">
             <h3>🎭 AR Model Viewer</h3>
-            <p>Point your camera at the AR marker to view 3D models!</p>
-            <p>Tap on the models to interact with them!</p>
+            <p>Point your camera at the AR marker!</p>
+            <p>The ghost will appear automatically when marker is detected.</p>
+            <p>Tap on the ghost to interact with it!</p>
         </div>
-        
+
         <div class="controls">
-            <button id="start-ar" class="action-button">Start AR Viewing</button>
+            <button id="start-ar" class="action-button" style="display: none;">Start AR Viewing</button>
             <button id="reset-scene" class="action-button">Reset Scene</button>
         </div>
-        
+
         <div class="score">
             <span>Models Interacted: <span id="score">0</span></span>
         </div>
@@ -86,7 +80,7 @@
     <audio id="interaction-sound" preload="auto">
         <source src="sounds/interaction.mp3" type="audio/mpeg">
     </audio>
-    
+
     <audio id="ambient-sound" preload="auto" loop>
         <source src="sounds/ambient.mp3" type="audio/mpeg">
     </audio>
@@ -95,40 +89,43 @@
         // Simple loading handler that doesn't depend on AR.js events
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 AR Model Viewer starting...');
-            
+
             // Start loading simulation immediately
             let progress = 0;
             const progressBar = document.querySelector('.loading-progress');
             const startButton = document.getElementById('start-ar');
-            
+
             const loadingInterval = setInterval(() => {
                 progress += Math.random() * 20;
                 if (progress >= 100) {
                     progress = 100;
                     clearInterval(loadingInterval);
-                    
+
                     // Show start button
                     if (startButton) {
                         startButton.style.display = 'block';
                     }
-                    
-                    // Auto-hide loading screen after 3 seconds
+
+                    // Auto-hide loading screen after 2 seconds and start AR
                     setTimeout(() => {
                         const loadingScreen = document.getElementById('loading-screen');
                         if (loadingScreen) {
                             loadingScreen.style.opacity = '0';
                             setTimeout(() => {
                                 loadingScreen.style.display = 'none';
+                                // Auto-start AR after loading
+                                const arApp = new ARGhostCatcher();
+                                arApp.startAR(); // Automatically start AR
                             }, 500);
                         }
-                    }, 3000);
+                    }, 2000);
                 }
-                
+
                 if (progressBar) {
                     progressBar.style.width = progress + '%';
                 }
             }, 150);
-            
+
             // Initialize the AR app
             setTimeout(() => {
                 new ARGhostCatcher();
@@ -136,4 +133,5 @@
         });
     </script>
 </body>
+
 </html>

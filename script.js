@@ -202,8 +202,8 @@ class ARGhostCatcher {
     
     showARScene() {
         const arScene = document.getElementById('ar-scene');
-        arScene.style.display = 'block';
-        console.log('📱 AR scene displayed');
+        // AR scene is already visible, just log
+        console.log('📱 AR scene is active');
         
         // Add debugging for AR events
         arScene.addEventListener('arjs-video-loaded', () => {

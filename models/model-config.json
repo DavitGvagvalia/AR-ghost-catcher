@@ -5,8 +5,8 @@
       "name": "Silly Ghost",
       "folder": "silly-ghost",
       "modelFile": "ghost.glb",
-      "scale": "0.5 0.5 0.5",
-      "position": "0 0 0",
+      "scale": "2.0 2.0 2.0",
+      "position": "0 0.5 0",
       "rotation": "0 0 0",
       "animations": {
         "float": {
