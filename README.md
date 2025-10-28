@@ -26,9 +26,8 @@ You need to create AR pattern markers for the app to work:
 ### 2. Add 3D Models
 
 Place your GLB/GLTF models in the `models/` directory:
-- `ghost.glb` - Ghost 3D model
-- `pumpkin.glb` - Pumpkin 3D model  
-- `bat.glb` - Bat 3D model
+- `ghost.glb` - Ghost 3D model ✅ **READY**
+- Add your custom models here (GLB/GLTF format)
 
 ### 3. Add Sound Effects (Optional)
 

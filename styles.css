@@ -185,12 +185,12 @@ body {
 }
 
 /* 3D Model Interactions */
-.ghost-entity, .pumpkin-entity, .bat-entity {
+.ghost-entity, .custom-entity {
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.ghost-entity:hover, .pumpkin-entity:hover, .bat-entity:hover {
+.ghost-entity:hover, .custom-entity:hover {
     transform: scale(1.1);
 }
 

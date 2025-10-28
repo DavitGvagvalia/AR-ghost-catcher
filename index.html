@@ -60,33 +60,25 @@
                 animation__rotate="property: rotation; to: 0 360 0; dur: 10000; loop: true;">
             </a-entity>
             
-            <!-- Pumpkin 3D Model -->
-            <a-entity 
-                id="pumpkin-1"
-                class="clickable pumpkin-entity"
-                gltf-model="#pumpkin-model"
-                scale="0.3 0.3 0.3"
+            <!-- Add your custom 3D models here -->
+            <!-- Example: -->
+            <!-- <a-entity 
+                id="model-1"
+                class="clickable custom-entity"
+                gltf-model="#your-model"
+                scale="0.5 0.5 0.5"
                 position="1 0 0"
-                animation__bounce="property: position; to: 1 0.3 0; dir: alternate; dur: 1500; loop: true;">
-            </a-entity>
-            
-            <!-- Bat 3D Model -->
-            <a-entity 
-                id="bat-1"
-                class="clickable bat-entity"
-                gltf-model="#bat-model"
-                scale="0.4 0.4 0.4"
-                position="-1 0.5 0"
-                animation__fly="property: position; to: -1 0.8 0; dir: alternate; dur: 1000; loop: true;">
-            </a-entity>
+                animation__float="property: position; to: 1 0.5 0; dir: alternate; dur: 2000; loop: true;">
+            </a-entity> -->
             
         </a-marker>
         
         <!-- 3D Model Assets -->
         <a-assets>
             <a-asset-item id="ghost-model" src="models/ghost.glb"></a-asset-item>
-            <a-asset-item id="pumpkin-model" src="models/pumpkin.glb"></a-asset-item>
-            <a-asset-item id="bat-model" src="models/bat.glb"></a-asset-item>
+            <!-- Add your custom 3D models here -->
+            <!-- Example: -->
+            <!-- <a-asset-item id="your-model" src="models/your-model.glb"></a-asset-item> -->
         </a-assets>
         
     </a-scene>
