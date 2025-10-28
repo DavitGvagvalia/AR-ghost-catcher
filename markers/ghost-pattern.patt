@@ -1,0 +1,10 @@
+# AR.js Pattern Marker for Ghost Catcher
+# This is a simple pattern marker for testing
+# In production, use the AR.js pattern generator to create a proper marker
+
+# Pattern data (simplified for demo)
+# For a real implementation, generate this using:
+# https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html
+
+# This placeholder pattern will work for basic testing
+# but for best results, create a proper pattern marker

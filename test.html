@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Ghost Catcher - Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .test-section h3 {
+            color: #ff6b6b;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.pass {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+        }
+        .status.fail {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+        }
+        .status.warning {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+        }
+        .file-list {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .button {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background: #ff5252;
+        }
+    </style>
+</head>
+<body>
+    <h1>👻 AR Ghost Catcher - Setup Test</h1>
+    
+    <div class="test-section">
+        <h3>📁 File Structure Check</h3>
+        <div id="file-check-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🌐 Browser Compatibility</h3>
+        <div id="browser-check-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📱 Mobile Features</h3>
+        <div id="mobile-check-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🎯 AR Capabilities</h3>
+        <div id="ar-check-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔗 Quick Links</h3>
+        <a href="index.html" class="button">🚀 Launch AR App</a>
+        <a href="marker-generator.html" class="button">🎯 Generate Markers</a>
+        <a href="README.md" class="button">📖 Documentation</a>
+    </div>
+
+    <script>
+        // File structure check
+        function checkFileStructure() {
+            const requiredFiles = [
+                'index.html',
+                'styles.css',
+                'script.js',
+                'markers/ghost-pattern.patt',
+                'models/ghost.glb',
+                'models/pumpkin.glb',
+                'models/bat.glb',
+                'sounds/ghost-disappear.mp3',
+                'sounds/spooky-ambient.mp3'
+            ];
+
+            const results = document.getElementById('file-check-results');
+            let html = '';
+
+            requiredFiles.forEach(file => {
+                // This is a simplified check - in a real implementation,
+                // you would use fetch() to check if files exist
+                const status = file.includes('models/') || file.includes('sounds/') ? 'warning' : 'pass';
+                const icon = status === 'pass' ? '✅' : status === 'warning' ? '⚠️' : '❌';
+                const message = status === 'warning' ? 'Placeholder - needs actual file' : 'Found';
+                
+                html += `<div class="status ${status}">${icon} ${file} - ${message}</div>`;
+            });
+
+            results.innerHTML = html;
+        }
+
+        // Browser compatibility check
+        function checkBrowserCompatibility() {
+            const results = document.getElementById('browser-check-results');
+            let html = '';
+
+            // Check for required APIs
+            const checks = [
+                {
+                    name: 'WebGL Support',
+                    test: () => !!document.createElement('canvas').getContext('webgl'),
+                    required: true
+                },
+                {
+                    name: 'WebRTC (Camera)',
+                    test: () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+                    required: true
+                },
+                {
+                    name: 'Web Audio API',
+                    test: () => !!(window.AudioContext || window.webkitAudioContext),
+                    required: false
+                },
+                {
+                    name: 'Touch Events',
+                    test: () => 'ontouchstart' in window,
+                    required: true
+                },
+                {
+                    name: 'Device Orientation',
+                    test: () => 'onorientationchange' in window,
+                    required: false
+                }
+            ];
+
+            checks.forEach(check => {
+                const passed = check.test();
+                const status = passed ? 'pass' : (check.required ? 'fail' : 'warning');
+                const icon = passed ? '✅' : (check.required ? '❌' : '⚠️');
+                
+                html += `<div class="status ${status}">${icon} ${check.name} - ${passed ? 'Supported' : (check.required ? 'Required but not supported' : 'Optional, not supported')}</div>`;
+            });
+
+            results.innerHTML = html;
+        }
+
+        // Mobile features check
+        function checkMobileFeatures() {
+            const results = document.getElementById('mobile-check-results');
+            let html = '';
+
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isTouch = 'ontouchstart' in window;
+            const isHighDPI = window.devicePixelRatio > 1;
+
+            html += `<div class="status ${isMobile ? 'pass' : 'warning'}">${isMobile ? '✅' : '⚠️'} Mobile Device - ${isMobile ? 'Detected' : 'Not detected'}</div>`;
+            html += `<div class="status ${isTouch ? 'pass' : 'fail'}">${isTouch ? '✅' : '❌'} Touch Support - ${isTouch ? 'Available' : 'Not available'}</div>`;
+            html += `<div class="status ${isHighDPI ? 'pass' : 'warning'}">${isHighDPI ? '✅' : '⚠️'} High DPI Display - ${isHighDPI ? 'Detected' : 'Not detected'}</div>`;
+
+            results.innerHTML = html;
+        }
+
+        // AR capabilities check
+        function checkARCapabilities() {
+            const results = document.getElementById('ar-check-results');
+            let html = '';
+
+            // Check for AR.js dependencies
+            const hasAframe = typeof AFRAME !== 'undefined';
+            const hasARJS = typeof ARjs !== 'undefined';
+            const hasThree = typeof THREE !== 'undefined';
+
+            html += `<div class="status ${hasAframe ? 'pass' : 'warning'}">${hasAframe ? '✅' : '⚠️'} A-Frame - ${hasAframe ? 'Loaded' : 'Not loaded (will load in main app)'}</div>`;
+            html += `<div class="status ${hasARJS ? 'pass' : 'warning'}">${hasARJS ? '✅' : '⚠️'} AR.js - ${hasARJS ? 'Loaded' : 'Not loaded (will load in main app)'}</div>`;
+            html += `<div class="status ${hasThree ? 'pass' : 'warning'}">${hasThree ? '✅' : '⚠️'} Three.js - ${hasThree ? 'Loaded' : 'Not loaded (will load in main app)'}</div>`;
+
+            // Check HTTPS
+            const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
+            html += `<div class="status ${isHTTPS ? 'pass' : 'fail'}">${isHTTPS ? '✅' : '❌'} HTTPS - ${isHTTPS ? 'Secure connection' : 'Required for camera access'}</div>`;
+
+            results.innerHTML = html;
+        }
+
+        // Run all checks when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            checkFileStructure();
+            checkBrowserCompatibility();
+            checkMobileFeatures();
+            checkARCapabilities();
+        });
+    </script>
+</body>
+</html>

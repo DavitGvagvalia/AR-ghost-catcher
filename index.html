@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Ghost Catcher</title>
+    
+    <!-- AR.js and Three.js -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="ghost-loader"></div>
+            <h2>AR Ghost Catcher</h2>
+            <p>Point your camera at the spooky image to catch ghosts!</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main AR Scene -->
+    <a-scene 
+        vr-mode-ui="enabled: false;" 
+        renderer="logarithmicDepthBuffer: true;"
+        embedded 
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+        id="ar-scene"
+        style="display: none;">
+        
+        <!-- Camera -->
+        <a-camera gps-camera rotation-reader></a-camera>
+        
+        <!-- Image Target Marker -->
+        <a-marker 
+            id="ghost-marker" 
+            type="pattern" 
+            url="markers/ghost-pattern.patt"
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;">
+            
+            <!-- Ghost 3D Model -->
+            <a-entity 
+                id="ghost-1"
+                class="clickable ghost-entity"
+                gltf-model="#ghost-model"
+                scale="0.5 0.5 0.5"
+                position="0 0 0"
+                animation__float="property: position; to: 0 0.5 0; dir: alternate; dur: 2000; loop: true;"
+                animation__rotate="property: rotation; to: 0 360 0; dur: 10000; loop: true;">
+            </a-entity>
+            
+            <!-- Pumpkin 3D Model -->
+            <a-entity 
+                id="pumpkin-1"
+                class="clickable pumpkin-entity"
+                gltf-model="#pumpkin-model"
+                scale="0.3 0.3 0.3"
+                position="1 0 0"
+                animation__bounce="property: position; to: 1 0.3 0; dir: alternate; dur: 1500; loop: true;">
+            </a-entity>
+            
+            <!-- Bat 3D Model -->
+            <a-entity 
+                id="bat-1"
+                class="clickable bat-entity"
+                gltf-model="#bat-model"
+                scale="0.4 0.4 0.4"
+                position="-1 0.5 0"
+                animation__fly="property: position; to: -1 0.8 0; dir: alternate; dur: 1000; loop: true;">
+            </a-entity>
+            
+        </a-marker>
+        
+        <!-- 3D Model Assets -->
+        <a-assets>
+            <a-asset-item id="ghost-model" src="models/ghost.glb"></a-asset-item>
+            <a-asset-item id="pumpkin-model" src="models/pumpkin.glb"></a-asset-item>
+            <a-asset-item id="bat-model" src="models/bat.glb"></a-asset-item>
+        </a-assets>
+        
+    </a-scene>
+
+    <!-- UI Overlay -->
+    <div id="ui-overlay">
+        <div class="instructions">
+            <h3>👻 AR Ghost Catcher</h3>
+            <p>Point your camera at the spooky image to catch ghosts!</p>
+            <p>Tap on the creatures to make them disappear!</p>
+        </div>
+        
+        <div class="controls">
+            <button id="start-ar" class="spooky-button">Start Ghost Hunting</button>
+            <button id="reset-scene" class="spooky-button">Reset Scene</button>
+        </div>
+        
+        <div class="score">
+            <span>Ghosts Caught: <span id="score">0</span></span>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="ghost-sound" preload="auto">
+        <source src="sounds/ghost-disappear.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="ambient-sound" preload="auto" loop>
+        <source src="sounds/spooky-ambient.mp3" type="audio/mpeg">
+    </audio>
+</body>
+</html>

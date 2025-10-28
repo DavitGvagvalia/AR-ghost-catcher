@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Ghost Catcher - Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="ghost-loader"></div>
+            <h2>AR Ghost Catcher</h2>
+            <p>Point your camera at the spooky image to catch ghosts!</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demo Content (instead of AR scene) -->
+    <div id="demo-content" style="display: none;">
+        <div class="demo-scene">
+            <h3>🎃 Demo Mode</h3>
+            <p>This is how your AR Ghost Catcher will look!</p>
+            <p>Click on the creatures to catch them!</p>
+            <div class="demo-ghosts">
+                <div class="demo-ghost" data-type="ghost">👻</div>
+                <div class="demo-pumpkin" data-type="pumpkin">🎃</div>
+                <div class="demo-bat" data-type="bat">🦇</div>
+            </div>
+            <div class="demo-instructions">
+                <p>In the full AR version, you'll point your camera at a special image and these creatures will appear in 3D!</p>
+                <p><strong>✅ Real 3D Model Available:</strong> ghost.glb is now in your models folder!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permission Popup -->
+    <div id="permission-popup" class="permission-popup">
+        <div class="permission-content">
+            <div class="permission-icon">📱</div>
+            <h3>Camera & Location Access</h3>
+            <p>AR Ghost Catcher needs access to your camera and location to work properly.</p>
+            <div class="permission-details">
+                <div class="permission-item">
+                    <span class="permission-icon-small">📷</span>
+                    <span>Camera - To detect AR markers and show 3D creatures</span>
+                </div>
+                <div class="permission-item">
+                    <span class="permission-icon-small">📍</span>
+                    <span>Location - To enhance AR tracking accuracy</span>
+                </div>
+            </div>
+            <div class="permission-buttons">
+                <button id="deny-permissions" class="permission-button deny">Skip for Demo</button>
+                <button id="grant-permissions" class="permission-button grant">Allow Access</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Overlay -->
+    <div id="ui-overlay">
+        <div class="instructions">
+            <h3>👻 AR Ghost Catcher</h3>
+            <p>Point your camera at the spooky image to catch ghosts!</p>
+            <p>Tap on the creatures to make them disappear!</p>
+        </div>
+
+        <div class="controls">
+            <button id="start-demo" class="spooky-button">Start Demo</button>
+            <button id="reset-demo" class="spooky-button">Reset Demo</button>
+        </div>
+
+        <div class="score">
+            <span>Ghosts Caught: <span id="score">0</span></span>
+        </div>
+    </div>
+
+    <style>
+        /* Permission Popup Styles */
+        .permission-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .permission-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 40px;
+            border-radius: 20px;
+            border: 3px solid #ff6b6b;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: popupSlideIn 0.5s ease-out;
+        }
+        
+        @keyframes popupSlideIn {
+            from {
+                transform: scale(0.8) translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .permission-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        .permission-content h3 {
+            color: #ff6b6b;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        
+        .permission-content p {
+            color: #ccc;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .permission-details {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        
+        .permission-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #fff;
+            font-size: 0.95rem;
+        }
+        
+        .permission-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .permission-icon-small {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .permission-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .permission-button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .permission-button.grant {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .permission-button.grant:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(45deg, #ff5252, #ff7043);
+        }
+        
+        .permission-button.deny {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .permission-button.deny:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .permission-button:active {
+            transform: translateY(0);
+        }
+        
+        /* Hide popup when not needed */
+        .permission-popup.hidden {
+            display: none;
+        }
+        
+        /* Mobile responsive for popup */
+        @media (max-width: 768px) {
+            .permission-content {
+                padding: 30px 20px;
+                margin: 15px;
+                max-width: 350px;
+            }
+            
+            .permission-content h3 {
+                font-size: 1.5rem;
+            }
+            
+            .permission-content p {
+                font-size: 1rem;
+            }
+            
+            .permission-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .permission-button {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+
+        .demo-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .demo-scene h3 {
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .demo-scene p {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 10px;
+            max-width: 600px;
+        }
+
+        .demo-ghosts {
+            display: flex;
+            gap: 80px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .demo-ghost,
+        .demo-pumpkin,
+        .demo-bat {
+            font-size: 5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: float 2s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            user-select: none;
+        }
+
+        .demo-ghost {
+            animation-delay: 0s;
+        }
+
+        .demo-pumpkin {
+            animation-delay: 0.7s;
+            text-shadow: 0 0 20px rgba(255, 142, 83, 0.5);
+        }
+
+        .demo-bat {
+            animation-delay: 1.4s;
+            text-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+        }
+
+        .demo-ghost:hover,
+        .demo-pumpkin:hover,
+        .demo-bat:hover {
+            transform: scale(1.3);
+            filter: brightness(1.2);
+        }
+
+        .disappearing {
+            animation: disappear 1s ease-out forwards;
+        }
+
+        .demo-instructions {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 2px solid #ff6b6b;
+            max-width: 500px;
+        }
+
+        .demo-instructions p {
+            font-size: 1rem;
+            color: #ffd93d;
+            margin: 0;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .demo-ghosts {
+                gap: 40px;
+            }
+
+            .demo-ghost,
+            .demo-pumpkin,
+            .demo-bat {
+                font-size: 3.5rem;
+            }
+
+            .demo-scene h3 {
+                font-size: 2rem;
+            }
+
+            .demo-scene p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+
+    <script>
+        let score = 0;
+        let loadingComplete = false;
+        let permissionsGranted = false;
+        
+        // Show permission popup after loading
+        function showPermissionPopup() {
+            const popup = document.getElementById('permission-popup');
+            popup.classList.remove('hidden');
+        }
+        
+        // Hide permission popup
+        function hidePermissionPopup() {
+            const popup = document.getElementById('permission-popup');
+            popup.classList.add('hidden');
+        }
+        
+        // Request camera and location permissions
+        async function requestPermissions() {
+            try {
+                // Request camera permission
+                const cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment' // Use back camera for AR
+                    } 
+                });
+                
+                // Stop the stream immediately as we just needed permission
+                cameraStream.getTracks().forEach(track => track.stop());
+                
+                // Request location permission (optional for AR)
+                if (navigator.geolocation) {
+                    await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(
+                            () => resolve(), // Success
+                            () => resolve(), // Error - we'll continue anyway
+                            { timeout: 5000 }
+                        );
+                    });
+                }
+                
+                permissionsGranted = true;
+                console.log('✅ Permissions granted successfully');
+                
+                // Show success message
+                showPermissionSuccess();
+                
+            } catch (error) {
+                console.warn('⚠️ Permission denied or error:', error);
+                permissionsGranted = false;
+                showPermissionDenied();
+            }
+        }
+        
+        // Show permission success message
+        function showPermissionSuccess() {
+            const popup = document.getElementById('permission-popup');
+            const content = popup.querySelector('.permission-content');
+            
+            content.innerHTML = `
+                <div class="permission-icon">✅</div>
+                <h3>Permissions Granted!</h3>
+                <p>Great! You're ready to catch some ghosts!</p>
+                <div class="permission-buttons">
+                    <button id="continue-demo" class="permission-button grant">Continue to Demo</button>
+                </div>
+            `;
+            
+            // Add event listener for continue button
+            document.getElementById('continue-demo').addEventListener('click', () => {
+                hidePermissionPopup();
+                startDemo();
+            });
+        }
+        
+        // Show permission denied message
+        function showPermissionDenied() {
+            const popup = document.getElementById('permission-popup');
+            const content = popup.querySelector('.permission-content');
+            
+            content.innerHTML = `
+                <div class="permission-icon">⚠️</div>
+                <h3>Permissions Denied</h3>
+                <p>No worries! You can still try the demo mode without camera access.</p>
+                <div class="permission-buttons">
+                    <button id="continue-demo-anyway" class="permission-button grant">Continue to Demo</button>
+                </div>
+            `;
+            
+            // Add event listener for continue button
+            document.getElementById('continue-demo-anyway').addEventListener('click', () => {
+                hidePermissionPopup();
+                startDemo();
+            });
+        }
+        
+        // Simulate loading with progress bar
+        function simulateLoading() {
+            let progress = 0;
+            const progressBar = document.querySelector('.loading-progress');
+            const startButton = document.getElementById('start-demo');
+            
+            const loadingInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    loadingComplete = true;
+                    
+                    // Show permission popup after loading
+                    setTimeout(() => {
+                        showPermissionPopup();
+                    }, 500);
+                }
+                
+                if (progressBar) {
+                    progressBar.style.width = progress + '%';
+                }
+            }, 150);
+        }
+
+        // Start demo
+        function startDemo() {
+            document.getElementById('loading-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('demo-content').style.display = 'block';
+            }, 500);
+        }
+
+        // Reset demo
+        function resetDemo() {
+            score = 0;
+            document.getElementById('score').textContent = score;
+
+            // Reset all demo creatures
+            const creatures = document.querySelectorAll('.demo-ghost, .demo-pumpkin, .demo-bat');
+            creatures.forEach(creature => {
+                creature.style.display = 'block';
+                creature.classList.remove('disappearing');
+            });
+        }
+
+        // Make creatures clickable
+        function handleCreatureClick(e) {
+            if (e.target.classList.contains('disappearing')) return;
+
+            const creatureType = e.target.dataset.type;
+            e.target.classList.add('disappearing');
+            score++;
+            document.getElementById('score').textContent = score;
+
+            // Add score animation
+            const scoreElement = document.getElementById('score');
+            scoreElement.style.transform = 'scale(1.2)';
+            scoreElement.style.color = '#ffd93d';
+
+            setTimeout(() => {
+                scoreElement.style.transform = 'scale(1)';
+                scoreElement.style.color = '#ffd93d';
+            }, 200);
+
+            // Hide creature after animation
+            setTimeout(() => {
+                e.target.style.display = 'none';
+            }, 1000);
+
+            // Show completion message if all caught
+            setTimeout(() => {
+                const remaining = document.querySelectorAll('.demo-ghost:not(.disappearing), .demo-pumpkin:not(.disappearing), .demo-bat:not(.disappearing)');
+                if (remaining.length === 0) {
+                    alert('🎉 Great job! You caught all the creatures! In the full AR version, you\'ll be able to do this with real 3D models!');
+                }
+            }, 1200);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            simulateLoading();
+            
+            // Permission popup event listeners
+            document.getElementById('grant-permissions').addEventListener('click', requestPermissions);
+            document.getElementById('deny-permissions').addEventListener('click', () => {
+                hidePermissionPopup();
+                startDemo();
+            });
+            
+            // Demo controls
+            document.getElementById('start-demo').addEventListener('click', startDemo);
+            document.getElementById('reset-demo').addEventListener('click', resetDemo);
+            
+            // Make creatures clickable
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('demo-ghost') || 
+                    e.target.classList.contains('demo-pumpkin') || 
+                    e.target.classList.contains('demo-bat')) {
+                    handleCreatureClick(e);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
