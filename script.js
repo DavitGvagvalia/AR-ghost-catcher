@@ -20,6 +20,10 @@ class ARGhostCatcher {
 
     async loadModels() {
         try {
+            // Create model loader instance if it doesn't exist
+            if (!window.modelLoader) {
+                window.modelLoader = new ModelLoader();
+            }
             await window.modelLoader.init();
             console.log('✅ Models loaded successfully');
         } catch (error) {

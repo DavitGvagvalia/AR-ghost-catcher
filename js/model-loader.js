@@ -119,6 +119,9 @@ class ModelLoader {
             return;
         }
 
+        // Clear existing entities and assets to prevent duplicates
+        this.clearExistingModels(arScene);
+
         // Add assets to AR scene
         const assetsContainer = arScene.querySelector('a-assets') || this.createAssetsContainer(arScene);
         
@@ -136,6 +139,18 @@ class ModelLoader {
             // Add entity
             this.addModelEntity(marker, model);
         }
+    }
+
+    clearExistingModels(arScene) {
+        // Clear existing model entities
+        const existingEntities = arScene.querySelectorAll('[id$="-1"]');
+        existingEntities.forEach(entity => entity.remove());
+        
+        // Clear existing model assets
+        const existingAssets = arScene.querySelectorAll('a-asset-item[id$="-model"]');
+        existingAssets.forEach(asset => asset.remove());
+        
+        console.log(`🧹 Cleared ${existingEntities.length} existing entities and ${existingAssets.length} assets`);
     }
 
     createAssetsContainer(arScene) {
@@ -205,5 +220,5 @@ class ModelLoader {
     }
 }
 
-// Global model loader instance
-window.modelLoader = new ModelLoader();
+// Global model loader instance - will be initialized when needed
+window.modelLoader = null;
