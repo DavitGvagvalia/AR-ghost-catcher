@@ -258,6 +258,14 @@ class ARGhostCatcher {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             this.interactionSound = document.getElementById('interaction-sound');
             this.ambientSound = document.getElementById('ambient-sound');
+            
+            // Check if audio elements exist
+            if (!this.interactionSound) {
+                console.log('ℹ️ No interaction sound file found - audio disabled');
+            }
+            if (!this.ambientSound) {
+                console.log('ℹ️ No ambient sound file found - audio disabled');
+            }
         } catch (error) {
             console.warn('Audio not supported:', error);
         }

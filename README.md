@@ -31,9 +31,9 @@ Place your GLB/GLTF models in the `models/` directory:
 
 ### 3. Add Sound Effects (Optional)
 
-Place audio files in the `sounds/` directory:
-- `interaction.mp3` - Sound when models are interacted with
-- `ambient.mp3` - Background ambient sound
+To add sound effects, uncomment the audio elements in `index.html` and add your audio files:
+- `sounds/interaction.mp3` - Sound when models are interacted with
+- `sounds/ambient.mp3` - Background ambient sound
 
 ### 4. Deploy to Netlify
 

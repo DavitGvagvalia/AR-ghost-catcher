@@ -20,9 +20,7 @@ AR-model-viewer/
 │   │   └── textures/   ✅ All texture files
 ├── markers/
 │   └── ar-pattern.patt     ⚠️  Needs real AR marker
-├── sounds/
-│   ├── interaction.mp3     ⚠️  Placeholder file
-│   └── ambient.mp3         ⚠️  Placeholder file
+├── sounds/                 ⚠️  Add sound files here (optional)
 └── netlify.toml        ✅ Deployment config
 ```
 
