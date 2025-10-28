@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Ghost Catcher - Demo</title>
+    <title>AR Model Viewer - Demo</title>
     <link rel="stylesheet" href="styles.css">
     
     <!-- Model Loader -->
@@ -16,8 +16,8 @@
     <div id="loading-screen">
         <div class="loading-content">
             <div class="ghost-loader"></div>
-            <h2>AR Ghost Catcher</h2>
-            <p>Point your camera at the spooky image to catch ghosts!</p>
+            <h2>AR Model Viewer</h2>
+            <p>Point your camera at the AR marker to view 3D models!</p>
             <div class="loading-bar">
                 <div class="loading-progress"></div>
             </div>
@@ -27,15 +27,15 @@
     <!-- Demo Content (instead of AR scene) -->
     <div id="demo-content" style="display: none;">
         <div class="demo-scene">
-            <h3>🎃 Demo Mode</h3>
-            <p>This is how your AR Ghost Catcher will look!</p>
-            <p>Click on the creatures to catch them!</p>
+            <h3>🎭 Demo Mode</h3>
+            <p>This is how your AR Model Viewer will look!</p>
+            <p>Click on the models to interact with them!</p>
             <div class="demo-ghosts" id="demo-creatures">
                 <!-- Demo creatures will be loaded dynamically here -->
             </div>
             <div class="demo-instructions">
-                <p>In the full AR version, you'll point your camera at a special image and these creatures will appear in 3D!</p>
-                <p><strong>✅ Real 3D Model Available:</strong> ghost.glb is now in your models folder!</p>
+                <p>In the full AR version, you'll point your camera at an AR marker and these models will appear in 3D!</p>
+                <p><strong>✅ Real 3D Models Available:</strong> Models are loaded dynamically from the models folder!</p>
             </div>
         </div>
     </div>
@@ -45,11 +45,11 @@
         <div class="permission-content">
             <div class="permission-icon">📱</div>
             <h3>Camera & Location Access</h3>
-            <p>AR Ghost Catcher needs access to your camera and location to work properly.</p>
+            <p>AR Model Viewer needs access to your camera and location to work properly.</p>
             <div class="permission-details">
                 <div class="permission-item">
                     <span class="permission-icon-small">📷</span>
-                    <span>Camera - To detect AR markers and show 3D creatures</span>
+                    <span>Camera - To detect AR markers and show 3D models</span>
                 </div>
                 <div class="permission-item">
                     <span class="permission-icon-small">📍</span>
@@ -66,18 +66,18 @@
     <!-- UI Overlay -->
     <div id="ui-overlay">
         <div class="instructions">
-            <h3>👻 AR Ghost Catcher</h3>
-            <p>Point your camera at the spooky image to catch ghosts!</p>
-            <p>Tap on the creatures to make them disappear!</p>
+            <h3>🎭 AR Model Viewer</h3>
+            <p>Point your camera at the AR marker to view 3D models!</p>
+            <p>Tap on the models to interact with them!</p>
         </div>
 
         <div class="controls">
-            <button id="start-demo" class="spooky-button">Start Demo</button>
-            <button id="reset-demo" class="spooky-button">Reset Demo</button>
+            <button id="start-demo" class="action-button">Start Demo</button>
+            <button id="reset-demo" class="action-button">Reset Demo</button>
         </div>
 
         <div class="score">
-            <span>Ghosts Caught: <span id="score">0</span></span>
+            <span>Models Interacted: <span id="score">0</span></span>
         </div>
     </div>
 

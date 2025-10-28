@@ -1,28 +1,28 @@
-# 🎯 AR Ghost Catcher - Setup Guide
+# 🎯 AR Model Viewer - Setup Guide
 
 ## 📋 **Current Status: Ready for Your 3D Models & AR Markers**
 
-Your AR Ghost Catcher app is now cleaned up and ready for your custom 3D models and target markers!
+Your AR Model Viewer app is now cleaned up and ready for your custom 3D models and target markers!
 
 ## ✅ **What's Ready:**
 
 ### **📁 File Structure:**
 ```
-AR-ghost-catcher/
+AR-model-viewer/
 ├── index.html          ✅ Main AR app (cleaned up)
 ├── demo.html           ✅ Demo mode (cleaned up)
-├── styles.css          ✅ Halloween theme (cleaned up)
+├── styles.css          ✅ Modern theme (cleaned up)
 ├── script.js           ✅ AR functionality
 ├── models/
-│   ├── ghost.glb       ✅ Your actual ghost model
-│   ├── ghost.gltf      ✅ Original GLTF version
-│   ├── ghost.bin       ✅ Binary data
-│   └── textures/       ✅ All texture files
+│   ├── silly-ghost/    ✅ Your actual ghost model
+│   │   ├── ghost.glb   ✅ GLB version
+│   │   ├── ghost.gltf  ✅ GLTF version
+│   │   └── textures/   ✅ All texture files
 ├── markers/
-│   └── ghost-pattern.patt  ⚠️  Needs real AR marker
+│   └── ar-pattern.patt     ⚠️  Needs real AR marker
 ├── sounds/
-│   ├── ghost-disappear.mp3  ⚠️  Placeholder file
-│   └── spooky-ambient.mp3   ⚠️  Placeholder file
+│   ├── interaction.mp3     ⚠️  Placeholder file
+│   └── ambient.mp3         ⚠️  Placeholder file
 └── netlify.toml        ✅ Deployment config
 ```
 

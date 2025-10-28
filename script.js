@@ -5,7 +5,7 @@ class ARGhostCatcher {
         this.score = 0;
         this.isARActive = false;
         this.audioContext = null;
-        this.ghostSound = null;
+        this.interactionSound = null;
         this.ambientSound = null;
         
         this.init();
@@ -108,7 +108,7 @@ class ARGhostCatcher {
         entity.classList.add('disappearing');
         
         // Play sound effect
-        this.playGhostSound();
+        this.playInteractionSound();
         
         // Update score
         this.updateScore();
@@ -256,23 +256,23 @@ class ARGhostCatcher {
         // Initialize audio context
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            this.ghostSound = document.getElementById('ghost-sound');
+            this.interactionSound = document.getElementById('interaction-sound');
             this.ambientSound = document.getElementById('ambient-sound');
         } catch (error) {
             console.warn('Audio not supported:', error);
         }
     }
     
-    playGhostSound() {
-        if (this.ghostSound && this.audioContext) {
+    playInteractionSound() {
+        if (this.interactionSound && this.audioContext) {
             // Resume audio context if suspended
             if (this.audioContext.state === 'suspended') {
                 this.audioContext.resume();
             }
             
-            this.ghostSound.currentTime = 0;
-            this.ghostSound.play().catch(error => {
-                console.warn('Could not play ghost sound:', error);
+            this.interactionSound.currentTime = 0;
+            this.interactionSound.play().catch(error => {
+                console.warn('Could not play interaction sound:', error);
             });
         }
     }

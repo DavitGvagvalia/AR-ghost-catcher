@@ -1,14 +1,14 @@
-# AR Ghost Catcher 👻
+# AR Model Viewer 🎭
 
-A spooky Halloween-themed Augmented Reality web application that lets you catch ghosts and other supernatural creatures using your mobile device's camera.
+A dynamic Augmented Reality web application that lets you view and interact with 3D models using your mobile device's camera.
 
 ## Features
 
 - **AR Integration**: Uses AR.js for marker-based augmented reality
-- **3D Models**: Interactive GLB/GLTF models (ghosts, pumpkins, bats)
+- **3D Models**: Interactive GLB/GLTF models with dynamic loading
 - **Image Targets**: Scannable AR markers for model placement
-- **Interactive Elements**: Tap to make creatures disappear with animations
-- **Halloween Theme**: Spooky but minimalistic design
+- **Interactive Elements**: Tap to interact with models and animations
+- **Dynamic Loading**: Automatically discovers and loads models from folders
 - **Mobile Optimized**: Designed for high-end mobile devices
 - **Sound Effects**: Ambient sounds and interaction feedback
 
@@ -21,19 +21,19 @@ You need to create AR pattern markers for the app to work:
 1. Go to [AR.js Pattern Generator](https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html)
 2. Upload a spooky image (recommended: 512x512px)
 3. Download the generated `.patt` file
-4. Replace `markers/ghost-pattern.patt` with your generated pattern
+4. Replace `markers/ar-pattern.patt` with your generated pattern
 
 ### 2. Add 3D Models
 
 Place your GLB/GLTF models in the `models/` directory:
-- `ghost.glb` - Ghost 3D model ✅ **READY**
-- Add your custom models here (GLB/GLTF format)
+- `silly-ghost/` - Ghost 3D model ✅ **READY**
+- Add your custom models in folders (GLB/GLTF format)
 
 ### 3. Add Sound Effects (Optional)
 
 Place audio files in the `sounds/` directory:
-- `ghost-disappear.mp3` - Sound when creatures disappear
-- `spooky-ambient.mp3` - Background ambient sound
+- `interaction.mp3` - Sound when models are interacted with
+- `ambient.mp3` - Background ambient sound
 
 ### 4. Deploy to Netlify
 
@@ -48,8 +48,8 @@ Place audio files in the `sounds/` directory:
 1. Open the app on a mobile device
 2. Allow camera permissions
 3. Point the camera at your AR marker image
-4. Tap on the 3D creatures to make them disappear
-5. Try to catch all the ghosts!
+4. Tap on the 3D models to interact with them
+5. Explore all the available models!
 
 ## Technical Details
 
@@ -58,7 +58,7 @@ Place audio files in the `sounds/` directory:
 - **Models**: GLB/GLTF format
 - **Markers**: AR.js pattern markers
 - **Audio**: Web Audio API
-- **Styling**: Custom CSS with Halloween theme
+- **Styling**: Custom CSS with modern theme
 
 ## Browser Support
 
@@ -107,4 +107,4 @@ MIT License - Feel free to use and modify for your own projects!
 
 ---
 
-Happy Ghost Hunting! 👻🎃
+Happy Model Viewing! 🎭✨
