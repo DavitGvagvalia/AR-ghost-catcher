@@ -6,7 +6,7 @@ class ARGhostCatcher {
         this.isARActive = false;
         this.audioContext = null;
         this.interactionSound = null;
-        this.ambientSound = null;
+        // this.ambientSound = null; // Removed ambient sound
 
         this.init();
     }
@@ -175,12 +175,12 @@ class ARGhostCatcher {
 
     onMarkerFound() {
         console.log('Spooky creatures detected!');
-        this.playAmbientSound();
+        // this.playAmbientSound(); // Removed ambient sound
     }
 
     onMarkerLost() {
         console.log('Spooky creatures disappeared...');
-        this.pauseAmbientSound();
+        // this.pauseAmbientSound(); // Removed ambient sound
     }
 
     startAR() {
@@ -314,15 +314,15 @@ class ARGhostCatcher {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             this.interactionSound = document.getElementById('interaction-sound');
-            this.ambientSound = document.getElementById('ambient-sound');
+            // this.ambientSound = document.getElementById('ambient-sound'); // Removed ambient sound
 
             // Check if audio elements exist
             if (!this.interactionSound) {
                 console.log('ℹ️ No interaction sound file found - audio disabled');
             }
-            if (!this.ambientSound) {
-                console.log('ℹ️ No ambient sound file found - audio disabled');
-            }
+            // if (!this.ambientSound) {
+            //     console.log('ℹ️ No ambient sound file found - audio disabled');
+            // }
         } catch (error) {
             console.warn('Audio not supported:', error);
         }
@@ -342,23 +342,23 @@ class ARGhostCatcher {
         }
     }
 
-    playAmbientSound() {
-        if (this.ambientSound && this.audioContext) {
-            if (this.audioContext.state === 'suspended') {
-                this.audioContext.resume();
-            }
+    // playAmbientSound() {
+    //     if (this.ambientSound && this.audioContext) {
+    //         if (this.audioContext.state === 'suspended') {
+    //             this.audioContext.resume();
+    //         }
 
-            this.ambientSound.play().catch(error => {
-                console.warn('Could not play ambient sound:', error);
-            });
-        }
-    }
+    //         this.ambientSound.play().catch(error => {
+    //             console.warn('Could not play ambient sound:', error);
+    //         });
+    //     }
+    // }
 
-    pauseAmbientSound() {
-        if (this.ambientSound) {
-            this.ambientSound.pause();
-        }
-    }
+    // pauseAmbientSound() {
+    //     if (this.ambientSound) {
+    //         this.ambientSound.pause();
+    //     }
+    // }
 
     simulateLoading() {
         // Simulate loading progress
@@ -393,10 +393,10 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
         // Pause audio when page is hidden
-        const ambientSound = document.getElementById('ambient-sound');
-        if (ambientSound) {
-            ambientSound.pause();
-        }
+        // const ambientSound = document.getElementById('ambient-sound');
+        // if (ambientSound) {
+        //     ambientSound.pause();
+        // }
     }
 });
 
