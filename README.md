@@ -1,139 +1,180 @@
-# AR Model Viewer 🎭
+# AR Ghost Catcher 👻
 
-A dynamic Augmented Reality web application that lets you view and interact with 3D models using your mobile device's camera.
+A modern React-based Augmented Reality game where players hunt for ghosts using AR markers. Built with MindAR, A-Frame, and Vite.
 
 ## Features
 
-- **AR Integration**: Uses AR.js for marker-based augmented reality
-- **3D Models**: Interactive GLB/GLTF models with dynamic loading
-- **Image Targets**: Scannable AR markers for model placement
-- **Interactive Elements**: Tap to interact with models and animations
-- **Dynamic Loading**: Automatically discovers and loads models from folders
-- **Mobile Optimized**: Designed for high-end mobile devices
-- **Sound Effects**: Ambient sounds and interaction feedback
+- **AR Marker Detection**: Uses MindAR for direct PNG/JPEG marker tracking
+- **5 Rarity Levels**: Common, Uncommon, Rare, Epic, Legendary ghosts
+- **Random Ghost Selection**: 4 different ghost models per rarity level
+- **Tap-to-Catch Mechanic**: Click ghosts multiple times based on rarity
+- **Halloween Theme**: Spooky UI with animations and sound effects
+- **Mobile-First**: Optimized for mobile devices
+- **Session Scoring**: Track points and prevent duplicate catches
 
-## Setup Instructions
+## Rarity System
 
-### 1. AR Marker Ready ✅
+| Rarity | Clicks Required | Points Awarded | Models Available |
+|--------|----------------|----------------|------------------|
+| Common | 1 | 1 | 4 variants |
+| Uncommon | 3 | 3 | 4 variants |
+| Rare | 5 | 5 | 4 variants |
+| Epic | 10 | 10 | 4 variants |
+| Legendary | 20 | 20 | 4 variants |
 
-Your AR marker is already set up and ready to use:
-- `markers/ar-pattern.patt` - Your AR pattern file ✅ **READY**
-- The app uses pattern tracking for reliable AR detection
-- Just point your camera at the pattern to see 3D models
+## Quick Start
 
-### 2. 3D Models Ready ✅
-
-Your 3D model is already set up and automatically loaded:
-- `silly-ghost/` - Ghost 3D model with textures ✅ **READY**
-- Models are loaded dynamically from the `models/` directory
-- To add more models, see the "Adding New Models" section below
-
-### 3. Sound Effects Ready ✅
-
-Your sound effects are already set up:
-- `sounds/interaction.mp3` - Sound when models are interacted with ✅ **READY**
-- Audio is enabled and will play when you interact with 3D models
-
-### 4. Deploy to Netlify
-
-1. Push your code to a GitHub repository
-2. Connect the repository to Netlify
-3. Set build command to: `echo "Static site - no build needed"`
-4. Set publish directory to: `/` (root)
-5. Deploy!
-
-## Adding New Models
-
-To add new 3D models to your AR app:
-
-1. **Create a folder** in `models/` directory: `models/your-model-name/`
-2. **Place your GLB/GLTF file** as `model.glb` in that folder
-3. **Add to configuration** in `models/model-config.json`:
-   ```json
-   {
-     "id": "your-model",
-     "name": "Your Model",
-     "folder": "your-model-name",
-     "modelFile": "model.glb",
-     "scale": "0.5 0.5 0.5",
-     "position": "0 0 0",
-     "rotation": "0 0 0",
-     "interactive": true,
-     "emoji": "🦄"
-   }
-   ```
-4. **Add to discovery list** in `js/model-loader.js`:
-   ```javascript
-   const knownModels = [
-       'silly-ghost',
-       'your-model-name',  // Add your model here
-   ];
+1. **Install Dependencies**
+   ```bash
+   npm install
    ```
 
-That's it! No HTML editing needed - models are loaded automatically.
+2. **Add Your Assets**
+   - Place 5 marker images in `public/markers/` as `marker1.png` through `marker5.png`
+   - Compile markers to `targets.mind` using [MindAR Compiler](https://hiukim.github.io/mind-ar-js-doc/tools/compile)
+   - Add 20 ghost models (4 per rarity) in `public/models/{rarity}/ghost{1-4}/`
+   - Add sound effects `click.mp3` and `catch.mp3` in `public/sounds/`
 
-## Usage
+3. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
 
-1. Open the app on a mobile device
-2. Allow camera permissions
-3. Point the camera at your AR marker image
-4. Tap on the 3D models to interact with them
-5. Explore all the available models!
+4. **Open in Mobile Browser**
+   - Navigate to the provided local URL
+   - Ensure camera permissions are enabled
+   - Point camera at AR markers to catch ghosts!
 
-## Technical Details
+## Asset Requirements
 
-- **Framework**: AR.js with A-Frame
-- **3D Engine**: Three.js
-- **Models**: GLB/GLTF format
-- **Markers**: AR.js pattern markers
-- **Audio**: Web Audio API
-- **Styling**: Custom CSS with modern theme
+### AR Markers
+- **Format**: PNG or JPEG
+- **Size**: 512x512 pixels or larger
+- **Quality**: High contrast, feature-rich images work best
+- **Compilation**: Must be compiled to `targets.mind` using MindAR tools
 
-## Browser Support
+### 3D Ghost Models
+- **Format**: GLB or GLTF with .bin file
+- **Structure**: `public/models/{rarity}/ghost{1-4}/scene.gltf`
+- **Size**: Under 5MB per model for web performance
+- **Scale**: Appropriately sized for AR (0.5-2 meters)
 
-- Chrome (Android/iOS) - Recommended
-- Safari (iOS) - Supported
-- Firefox (Android) - Supported
-- Edge (Android) - Supported
+### Sound Effects
+- **Format**: MP3
+- **Files**: `click.mp3` (tap sound), `catch.mp3` (catch sound)
+- **Duration**: 0.5-2 seconds each
+- **Quality**: Normalized volume, 44.1kHz sample rate
 
-## Performance Notes
+## Project Structure
 
-- Optimized for high-end mobile devices
-- Uses hardware acceleration when available
-- Implements efficient 3D model loading
-- Includes mobile-specific optimizations
+```
+ar-ghost-catcher/
+├── public/
+│   ├── markers/           # AR marker images + targets.mind
+│   ├── models/            # 3D ghost models by rarity
+│   └── sounds/            # Audio effects
+├── src/
+│   ├── components/        # React components
+│   ├── lib/              # Utilities and hooks
+│   └── styles/           # CSS themes
+└── package.json
+```
 
-## Customization
+## Technology Stack
 
-You can easily customize:
-- 3D models by replacing files in `models/` directory
-- AR markers by generating new patterns
-- Sound effects by replacing audio files
-- Styling by modifying `styles.css`
-- Interactions by editing `script.js`
+- **React 18** - UI framework
+- **Vite** - Build tool and dev server
+- **TypeScript** - Type safety
+- **MindAR** - AR marker tracking
+- **A-Frame** - 3D scene rendering
+- **CSS3** - Halloween-themed styling
+
+## Browser Compatibility
+
+- **iOS Safari** 11+
+- **Chrome Android** 81+
+- **Modern mobile browsers** with WebGL support
+- **HTTPS required** for camera access (localhost OK for dev)
+
+## Development
+
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+### Key Components
+
+- **App.tsx** - Main app state machine
+- **ARScene.tsx** - MindAR integration and ghost spawning
+- **HUD.tsx** - Game UI overlay
+- **EndScreen.tsx** - Score display and restart
+- **HalloweenFrame.tsx** - Decorative elements
+
+### Key Libraries
+
+- **rarity.ts** - Rarity configuration and model selection
+- **session.ts** - Score tracking and caught markers
+- **audio.ts** - Sound effect management
+- **arHelpers.ts** - Ghost spawning and animation utilities
+
+## Deployment
+
+1. **Build the project**
+   ```bash
+   npm run build
+   ```
+
+2. **Deploy to static hosting**
+   - Upload `dist/` folder to your hosting service
+   - Ensure HTTPS is enabled for camera access
+   - Test on mobile devices
+
+3. **Recommended hosting platforms**
+   - Vercel
+   - Netlify
+   - GitHub Pages (with custom domain for HTTPS)
 
 ## Troubleshooting
 
-**Camera not working?**
-- Ensure HTTPS is enabled (required for camera access)
-- Check browser permissions
+### Camera Issues
+- Ensure HTTPS is enabled
+- Check browser camera permissions
 - Try refreshing the page
+- Test on different devices
 
-**Models not loading?**
-- Check file paths in HTML
-- Ensure models are in GLB/GLTF format
-- Verify file sizes are reasonable (< 10MB recommended)
+### AR Detection Issues
+- Verify marker images are high contrast
+- Ensure `targets.mind` file is properly compiled
+- Check marker image quality and size
+- Test with different lighting conditions
 
-**AR not detecting markers?**
-- Ensure good lighting conditions
-- Keep marker flat and stable
-- Try different angles and distances
-- Check marker pattern quality
+### Performance Issues
+- Optimize 3D model file sizes
+- Reduce texture resolution if needed
+- Test on lower-end devices
+- Check browser WebGL support
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly on mobile devices
+5. Submit a pull request
 
 ## License
 
-MIT License - Feel free to use and modify for your own projects!
+MIT License - feel free to use this project for your own AR games!
 
----
+## Support
 
-Happy Model Viewing! 🎭✨
+For issues and questions:
+1. Check the troubleshooting section
+2. Review asset requirements
+3. Test on different devices
+4. Open an issue with detailed information
+
+Happy ghost hunting! 👻🎃
