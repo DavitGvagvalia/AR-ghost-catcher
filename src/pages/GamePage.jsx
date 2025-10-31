@@ -7,22 +7,7 @@ const CONFIG = {
   models: [
     { marker: 0, name: "ghost1" },
     { marker: 1, name: "ghost2" },
-    { marker: 2, name: "ghost3" },
-    { marker: 3, name: "ghost4" },
-    { marker: 4, name: "ghost4" },
-    { marker: 5, name: "ghost5" },
-    { marker: 6, name: "ghost6" },
-    { marker: 7, name: "ghost7" },
-    { marker: 8, name: "ghost1" },
-    { marker: 9, name: "ghost2" },
-    { marker: 10, name: "ghost3" },
-    { marker: 11, name: "ghost4" },
-    { marker: 12, name: "ghost4" },
-    { marker: 13, name: "ghost5" },
-    { marker: 14, name: "ghost6" },
-    { marker: 15, name: "ghost7" },
-    { marker: 16, name: "ghost1" },
-    { marker: 17, name: "ghost2" }
+    { marker: 2, name: "ghost3" }
 
   ],
   mindar: { imageTargetSrc: "/assets/markers/targets.mind" },
