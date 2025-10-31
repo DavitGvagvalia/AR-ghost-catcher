@@ -1,0 +1,187 @@
+.halloween-frame {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bat {
+  position: absolute;
+  font-size: 2rem;
+  color: var(--accent-purple);
+  animation: fly 4s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+.bat-1 {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.bat-2 {
+  top: 60%;
+  right: 15%;
+  animation-delay: 1s;
+}
+
+.bat-3 {
+  top: 40%;
+  left: 80%;
+  animation-delay: 2s;
+}
+
+.pumpkin {
+  position: absolute;
+  font-size: 1.5rem;
+  animation: glow 3s ease-in-out infinite alternate;
+}
+
+.pumpkin-1 {
+  bottom: 20%;
+  left: 5%;
+  animation-delay: 0.5s;
+}
+
+.pumpkin-2 {
+  top: 30%;
+  right: 5%;
+  animation-delay: 1.5s;
+}
+
+.fog-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg,
+      transparent 0%,
+      rgba(139, 92, 246, 0.1) 25%,
+      transparent 50%,
+      rgba(255, 107, 53, 0.1) 75%,
+      transparent 100%);
+  animation: fog 8s ease-in-out infinite;
+}
+
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--accent-orange);
+  border-radius: 50%;
+  animation: float 3s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.particle-1 {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.particle-2 {
+  top: 40%;
+  right: 30%;
+  animation-delay: 0.5s;
+}
+
+.particle-3 {
+  top: 70%;
+  left: 60%;
+  animation-delay: 1s;
+}
+
+.particle-4 {
+  top: 30%;
+  right: 60%;
+  animation-delay: 1.5s;
+}
+
+.particle-5 {
+  top: 80%;
+  left: 40%;
+  animation-delay: 2s;
+}
+
+
+/* HUD */
+.hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.score-counter {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid var(--accent-orange);
+  border-radius: 25px;
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-glow);
+  backdrop-filter: blur(10px);
+}
+
+.score-icon {
+  font-size: 1.5rem;
+  animation: float 2s ease-in-out infinite;
+}
+
+.score-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--accent-orange);
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+.end-button {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(220, 38, 38, 0.9);
+  border: 2px solid var(--accent-red);
+  border-radius: 50px;
+  padding: 0.8rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+  font-family: 'Creepster', cursive;
+  color: var(--text-primary);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.end-button:hover {
+  background: var(--accent-red);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+}
+
+.end-icon {
+  font-size: 1.2rem;
+}

@@ -1,0 +1,62 @@
+/* AR Scene */
+.ar-scene {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.ar-scene a-scene {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 1 !important;
+}
+
+/* Ensure video element is visible */
+.ar-scene video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 1 !important;
+}
+
+/* MindAR canvas */
+.ar-scene canvas {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 2 !important;
+}
+
+.ar-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 2px solid var(--accent-orange);
+}
+
+.loading-spinner {
+  font-size: 3rem;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.ar-loading p {
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-family: 'Creepster', cursive;
+}

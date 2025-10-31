@@ -1,0 +1,53 @@
+.idle-screen {
+    background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.start-container {
+    text-align: center;
+    z-index: 10;
+    position: relative;
+}
+
+.game-title {
+    font-family: 'Nosifer', cursive;
+    font-size: 3rem;
+    color: var(--accent-orange);
+    text-shadow: var(--shadow-glow);
+    margin-bottom: 1rem;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+.game-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-family: 'Creepster', cursive;
+}
+
+.start-button {
+    background: linear-gradient(45deg, var(--accent-orange), var(--accent-red));
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    font-family: 'Creepster', cursive;
+    color: var(--text-primary);
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: var(--shadow-glow);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.start-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+}
+
+.start-button:active {
+    transform: scale(0.95);
+}

@@ -1,0 +1,82 @@
+.end-screen {
+    background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.end-content {
+    text-align: center;
+    z-index: 10;
+    position: relative;
+    max-width: 400px;
+    padding: 2rem;
+}
+
+.final-score {
+    margin-bottom: 2rem;
+}
+
+.score-emoji {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+.score-title {
+    font-family: 'Nosifer', cursive;
+    font-size: 2rem;
+    color: var(--accent-orange);
+    text-shadow: var(--shadow-glow);
+    margin-bottom: 0.5rem;
+}
+
+.score-value {
+    font-size: 4rem;
+    font-weight: bold;
+    color: var(--text-accent);
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+    margin-bottom: 1rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.score-message {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-family: 'Creepster', cursive;
+    line-height: 1.4;
+}
+
+.end-actions {
+    margin-top: 2rem;
+}
+
+.restart-button {
+    background: linear-gradient(45deg, var(--accent-purple), var(--accent-orange));
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.3rem;
+    font-family: 'Creepster', cursive;
+    color: var(--text-primary);
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: var(--shadow-glow);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+}
+
+.restart-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+}
+
+.restart-icon {
+    font-size: 1.2rem;
+    animation: spin 2s linear infinite;
+}

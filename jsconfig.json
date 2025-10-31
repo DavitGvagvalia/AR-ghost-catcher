@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src",
+    "src/types"
+  ]
+}
+
+
