@@ -22,18 +22,8 @@ const CONFIG = {
     { marker: 14, name: "ghost6" },
     { marker: 15, name: "ghost7" },
     { marker: 16, name: "ghost1" },
-    { marker: 17, name: "ghost2" },
-    { marker: 18, name: "ghost3" },
-    { marker: 19, name: "ghost4" },
-    { marker: 20, name: "ghost5" },
-    { marker: 21, name: "ghost6" },
-    { marker: 22, name: "ghost7" },
-    { marker: 23, name: "ghost1" },
-    { marker: 24, name: "ghost2" },
-    { marker: 25, name: "ghost3" },
-    { marker: 26, name: "ghost4" }
+    { marker: 17, name: "ghost2" }
 
-    
   ],
   mindar: { imageTargetSrc: "/assets/markers/targets.mind" },
   sounds: {
@@ -129,3 +119,5 @@ export default function GamePage({ score, changeScore }) {
     </div>
   );
 }
+
+// penis penis penis penis
