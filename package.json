@@ -20,6 +20,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint scripts tests && npm run lint --workspaces --if-present",
     "migrate": "npm run migrate -w @ghost-hunt/server",
+    "review:ui": "node scripts/review-auth-ui.mjs",
     "pretest": "npm run build -w @ghost-hunt/shared",
     "prevalidate:assets": "npm run build -w @ghost-hunt/shared",
     "start": "concurrently -k -n web,server -c cyan,magenta \"npm run start -w @ghost-hunt/web\" \"npm run start -w @ghost-hunt/server\"",

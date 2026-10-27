@@ -1,0 +1,419 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T21:56:59Z",
+  "title": "Design System: Halloween AR Ghost Hunt",
+  "extensions": {
+    "colorMeta": {
+      "night": {
+        "role": "neutral",
+        "displayName": "Event Night",
+        "canonical": "#09070f",
+        "tonalRamp": [
+          "color-mix(in oklch, #09070f 30%, black)",
+          "color-mix(in oklch, #09070f 55%, black)",
+          "color-mix(in oklch, #09070f 80%, black)",
+          "#09070f",
+          "color-mix(in oklch, #09070f 80%, white)",
+          "color-mix(in oklch, #09070f 60%, white)",
+          "color-mix(in oklch, #09070f 35%, white)",
+          "color-mix(in oklch, #09070f 15%, white)"
+        ]
+      },
+      "night-raised": {
+        "role": "neutral",
+        "displayName": "Raised Night",
+        "canonical": "#12101b",
+        "tonalRamp": [
+          "color-mix(in oklch, #12101b 30%, black)",
+          "color-mix(in oklch, #12101b 55%, black)",
+          "color-mix(in oklch, #12101b 80%, black)",
+          "#12101b",
+          "color-mix(in oklch, #12101b 80%, white)",
+          "color-mix(in oklch, #12101b 60%, white)",
+          "color-mix(in oklch, #12101b 35%, white)",
+          "color-mix(in oklch, #12101b 15%, white)"
+        ]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Field Black",
+        "canonical": "#0d0b14",
+        "tonalRamp": [
+          "color-mix(in oklch, #0d0b14 30%, black)",
+          "color-mix(in oklch, #0d0b14 55%, black)",
+          "color-mix(in oklch, #0d0b14 80%, black)",
+          "#0d0b14",
+          "color-mix(in oklch, #0d0b14 80%, white)",
+          "color-mix(in oklch, #0d0b14 60%, white)",
+          "color-mix(in oklch, #0d0b14 35%, white)",
+          "color-mix(in oklch, #0d0b14 15%, white)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Bone White",
+        "canonical": "#f6f0e6",
+        "tonalRamp": [
+          "color-mix(in oklch, #f6f0e6 30%, black)",
+          "color-mix(in oklch, #f6f0e6 55%, black)",
+          "color-mix(in oklch, #f6f0e6 80%, black)",
+          "#f6f0e6",
+          "color-mix(in oklch, #f6f0e6 80%, white)",
+          "color-mix(in oklch, #f6f0e6 60%, white)",
+          "color-mix(in oklch, #f6f0e6 35%, white)",
+          "color-mix(in oklch, #f6f0e6 15%, white)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Bone",
+        "canonical": "#d4ccdc",
+        "tonalRamp": [
+          "color-mix(in oklch, #d4ccdc 30%, black)",
+          "color-mix(in oklch, #d4ccdc 55%, black)",
+          "color-mix(in oklch, #d4ccdc 80%, black)",
+          "#d4ccdc",
+          "color-mix(in oklch, #d4ccdc 80%, white)",
+          "color-mix(in oklch, #d4ccdc 60%, white)",
+          "color-mix(in oklch, #d4ccdc 35%, white)",
+          "color-mix(in oklch, #d4ccdc 15%, white)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Night Mist",
+        "canonical": "#aaa2b7",
+        "tonalRamp": [
+          "color-mix(in oklch, #aaa2b7 30%, black)",
+          "color-mix(in oklch, #aaa2b7 55%, black)",
+          "color-mix(in oklch, #aaa2b7 80%, black)",
+          "#aaa2b7",
+          "color-mix(in oklch, #aaa2b7 80%, white)",
+          "color-mix(in oklch, #aaa2b7 60%, white)",
+          "color-mix(in oklch, #aaa2b7 35%, white)",
+          "color-mix(in oklch, #aaa2b7 15%, white)"
+        ]
+      },
+      "muted-deep": {
+        "role": "neutral",
+        "displayName": "Deep Mist",
+        "canonical": "#8d869b",
+        "tonalRamp": [
+          "color-mix(in oklch, #8d869b 30%, black)",
+          "color-mix(in oklch, #8d869b 55%, black)",
+          "color-mix(in oklch, #8d869b 80%, black)",
+          "#8d869b",
+          "color-mix(in oklch, #8d869b 80%, white)",
+          "color-mix(in oklch, #8d869b 60%, white)",
+          "color-mix(in oklch, #8d869b 35%, white)",
+          "color-mix(in oklch, #8d869b 15%, white)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Lavender Rule",
+        "canonical": "#2b2639",
+        "tonalRamp": [
+          "color-mix(in oklch, #2b2639 30%, black)",
+          "color-mix(in oklch, #2b2639 55%, black)",
+          "color-mix(in oklch, #2b2639 80%, black)",
+          "#2b2639",
+          "color-mix(in oklch, #2b2639 80%, white)",
+          "color-mix(in oklch, #2b2639 60%, white)",
+          "color-mix(in oklch, #2b2639 35%, white)",
+          "color-mix(in oklch, #2b2639 15%, white)"
+        ]
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Strong Lavender Rule",
+        "canonical": "#3a3349",
+        "tonalRamp": [
+          "color-mix(in oklch, #3a3349 30%, black)",
+          "color-mix(in oklch, #3a3349 55%, black)",
+          "color-mix(in oklch, #3a3349 80%, black)",
+          "#3a3349",
+          "color-mix(in oklch, #3a3349 80%, white)",
+          "color-mix(in oklch, #3a3349 60%, white)",
+          "color-mix(in oklch, #3a3349 35%, white)",
+          "color-mix(in oklch, #3a3349 15%, white)"
+        ]
+      },
+      "orange": {
+        "role": "primary",
+        "displayName": "Safety Orange",
+        "canonical": "#ff7a1a",
+        "tonalRamp": [
+          "color-mix(in oklch, #ff7a1a 30%, black)",
+          "color-mix(in oklch, #ff7a1a 55%, black)",
+          "color-mix(in oklch, #ff7a1a 80%, black)",
+          "#ff7a1a",
+          "color-mix(in oklch, #ff7a1a 80%, white)",
+          "color-mix(in oklch, #ff7a1a 60%, white)",
+          "color-mix(in oklch, #ff7a1a 35%, white)",
+          "color-mix(in oklch, #ff7a1a 15%, white)"
+        ]
+      },
+      "orange-hover": {
+        "role": "primary",
+        "displayName": "Hot Orange",
+        "canonical": "#ff9144",
+        "tonalRamp": [
+          "color-mix(in oklch, #ff9144 30%, black)",
+          "color-mix(in oklch, #ff9144 55%, black)",
+          "color-mix(in oklch, #ff9144 80%, black)",
+          "#ff9144",
+          "color-mix(in oklch, #ff9144 80%, white)",
+          "color-mix(in oklch, #ff9144 60%, white)",
+          "color-mix(in oklch, #ff9144 35%, white)",
+          "color-mix(in oklch, #ff9144 15%, white)"
+        ]
+      },
+      "orange-ink": {
+        "role": "neutral",
+        "displayName": "Soot Ink",
+        "canonical": "#120b06",
+        "tonalRamp": [
+          "color-mix(in oklch, #120b06 30%, black)",
+          "color-mix(in oklch, #120b06 55%, black)",
+          "color-mix(in oklch, #120b06 80%, black)",
+          "#120b06",
+          "color-mix(in oklch, #120b06 80%, white)",
+          "color-mix(in oklch, #120b06 60%, white)",
+          "color-mix(in oklch, #120b06 35%, white)",
+          "color-mix(in oklch, #120b06 15%, white)"
+        ]
+      },
+      "warning": {
+        "role": "secondary",
+        "displayName": "Ember Warning",
+        "canonical": "#ffb36b",
+        "tonalRamp": [
+          "color-mix(in oklch, #ffb36b 30%, black)",
+          "color-mix(in oklch, #ffb36b 55%, black)",
+          "color-mix(in oklch, #ffb36b 80%, black)",
+          "#ffb36b",
+          "color-mix(in oklch, #ffb36b 80%, white)",
+          "color-mix(in oklch, #ffb36b 60%, white)",
+          "color-mix(in oklch, #ffb36b 35%, white)",
+          "color-mix(in oklch, #ffb36b 15%, white)"
+        ]
+      },
+      "cyan": {
+        "role": "secondary",
+        "displayName": "Signal Cyan",
+        "canonical": "#7df9e7",
+        "tonalRamp": [
+          "color-mix(in oklch, #7df9e7 30%, black)",
+          "color-mix(in oklch, #7df9e7 55%, black)",
+          "color-mix(in oklch, #7df9e7 80%, black)",
+          "#7df9e7",
+          "color-mix(in oklch, #7df9e7 80%, white)",
+          "color-mix(in oklch, #7df9e7 60%, white)",
+          "color-mix(in oklch, #7df9e7 35%, white)",
+          "color-mix(in oklch, #7df9e7 15%, white)"
+        ]
+      },
+      "violet": {
+        "role": "secondary",
+        "displayName": "Spectral Lavender",
+        "canonical": "#b9a4ff",
+        "tonalRamp": [
+          "color-mix(in oklch, #b9a4ff 30%, black)",
+          "color-mix(in oklch, #b9a4ff 55%, black)",
+          "color-mix(in oklch, #b9a4ff 80%, black)",
+          "#b9a4ff",
+          "color-mix(in oklch, #b9a4ff 80%, white)",
+          "color-mix(in oklch, #b9a4ff 60%, white)",
+          "color-mix(in oklch, #b9a4ff 35%, white)",
+          "color-mix(in oklch, #b9a4ff 15%, white)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Short rallying headlines and page theses."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Field-sheet, roster, and task titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Operational instructions, privacy guidance, and explanations."
+      },
+      "label": {
+        "displayName": "Signal Label",
+        "purpose": "Uppercase channel, room, and compact state metadata."
+      },
+      "room-code": {
+        "displayName": "Room Code",
+        "purpose": "The public six-character event code."
+      }
+    },
+    "shadows": [
+      {
+        "name": "field-sheet",
+        "value": "0 20px 60px rgba(0,0,0,0.18)",
+        "purpose": "Separates live roster surfaces from the canvas."
+      },
+      {
+        "name": "join-sheet",
+        "value": "0 20px 60px rgba(0,0,0,0.22)",
+        "purpose": "Adds slightly firmer depth behind the active login task."
+      },
+      {
+        "name": "action-ember",
+        "value": "0 0 24px rgba(255,122,26,0.45)",
+        "purpose": "Marks the short orange keyline on the join sheet."
+      },
+      {
+        "name": "presence-signal",
+        "value": "0 0 12px rgba(125,249,231,0.65)",
+        "purpose": "Illuminates only the connected-player dot."
+      },
+      {
+        "name": "brand-ember",
+        "value": "0 0 28px rgba(255,122,26,0.25)",
+        "purpose": "Provides a quiet halo around the ghost mark."
+      }
+    ],
+    "motion": [
+      {
+        "name": "room-signal-enter",
+        "value": "420ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Introduces a newly mounted live room sheet from 10px below while fading in."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single hot action for joining or creating a room.",
+      "html": "<button class=\"ds-btn-primary\"><span>Join the room</span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12h14m-5-5 5 5-5 5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" /></svg></button>",
+      "css": ".ds-btn-primary { width: 100%; min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 0; border-radius: 12px; padding: 16px 20px; background: var(--orange, #ff7a1a); color: #120b06; font: 800 16px/1.25 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif; transition: background-color 150ms, transform 150ms; cursor: pointer; } .ds-btn-primary svg { width: 20px; height: 20px; transition: transform 150ms; } .ds-btn-primary:hover { background: #ff9144; } .ds-btn-primary:hover svg { transform: translateX(4px); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 3px solid var(--cyan, #7df9e7); outline-offset: 3px; } .ds-btn-primary:disabled { background: #4d3a2c; color: #a38b78; cursor: not-allowed; }"
+    },
+    {
+      "name": "Room Code Field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "The code-led input variant used at player check-in.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Room code</span><input class=\"ds-field-input ds-field-input-code\" value=\"ABC123\" aria-describedby=\"ds-field-help\" /><span id=\"ds-field-help\" class=\"ds-field-help\">Six characters from your host screen.</span></label>",
+      "css": ".ds-field { display: block; color: #d4ccdc; font-family: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif; } .ds-field-label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; } .ds-field-input { width: 100%; min-height: 56px; border: 1px solid #4a425c; border-radius: 12px; background: var(--field, #0d0b14); color: var(--ink, #f6f0e6); padding: 14px 16px; caret-color: var(--orange, #ff7a1a); transition: border-color 150ms; } .ds-field-input-code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 18px; font-weight: 900; letter-spacing: 0.18em; text-transform: uppercase; } .ds-field-input:hover { border-color: #6a607f; } .ds-field-input:focus { border-color: var(--cyan, #7df9e7); outline: none; } .ds-field-input:focus-visible { outline: 3px solid var(--cyan, #7df9e7); outline-offset: 3px; } .ds-field-help { display: block; margin-top: 8px; color: #8d869b; font-size: 12px; }"
+    },
+    {
+      "name": "Live Status Pill",
+      "kind": "chip",
+      "refersTo": "status-live",
+      "description": "The explicit connected-state signal used in player and host lobbies.",
+      "html": "<span class=\"ds-status-live\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"2\" fill=\"currentColor\" /><path d=\"M8.5 8.5a5 5 0 0 0 0 7m7-7a5 5 0 0 1 0 7M5.7 5.7a9 9 0 0 0 0 12.6m12.6-12.6a9 9 0 0 1 0 12.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" /></svg>Live</span>",
+      "css": ".ds-status-live { min-height: 36px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid color-mix(in srgb, var(--cyan, #7df9e7) 25%, transparent); border-radius: 9999px; padding: 8px 12px; background: color-mix(in srgb, var(--cyan, #7df9e7) 8%, transparent); color: var(--cyan, #7df9e7); font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; letter-spacing: 0.12em; text-transform: uppercase; } .ds-status-live svg { width: 16px; height: 16px; }"
+    },
+    {
+      "name": "Roster Field Sheet",
+      "kind": "card",
+      "refersTo": "sheet-card",
+      "description": "The restrained live-room surface containing attendance and connection state.",
+      "html": "<section class=\"ds-roster\"><div class=\"ds-roster-head\"><h2>1 hunter ready</h2><span class=\"ds-roster-count\">01</span></div><div class=\"ds-roster-row\"><span class=\"ds-roster-index\">01</span><div><strong>Review Hunter <em>You</em></strong><small>Ready in the lobby</small></div><i><span class=\"ds-sr-only\">Connected</span></i></div><p class=\"ds-roster-note\">You can refresh safely. This device will resume using its private session cookie.</p></section>",
+      "css": ".ds-roster { border: 1px solid #3a3349; border-radius: 16px; padding: 20px; background: rgb(18 16 27 / 55%); color: var(--ink, #f6f0e6); box-shadow: 0 20px 60px rgba(0,0,0,0.18); font-family: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif; } .ds-roster-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; } .ds-roster-head h2 { margin: 0; font-size: 24px; line-height: 1.2; letter-spacing: -0.03em; } .ds-roster-count { color: var(--cyan, #7df9e7); font-weight: 800; } .ds-roster-row { min-height: 64px; display: flex; align-items: center; gap: 16px; border-top: 1px solid var(--line, #2b2639); border-bottom: 1px solid var(--line, #2b2639); padding: 12px 0; } .ds-roster-index { width: 36px; height: 36px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 9999px; background: #221c30; color: var(--violet, #b9a4ff); font-size: 14px; font-weight: 800; } .ds-roster-row div { min-width: 0; flex: 1; } .ds-roster-row strong { display: block; } .ds-roster-row em { margin-left: 8px; color: var(--cyan, #7df9e7); font-size: 12px; font-style: normal; } .ds-roster-row small { display: block; margin-top: 3px; color: #8d869b; } .ds-roster-row i { width: 10px; height: 10px; border-radius: 9999px; background: var(--cyan, #7df9e7); box-shadow: 0 0 12px rgba(125,249,231,0.65); } .ds-roster-note { margin: 20px 0 0; color: #8d869b; font-size: 14px; line-height: 1.5; } .ds-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }"
+    },
+    {
+      "name": "Ghost Hunt Brand Lockup",
+      "kind": "nav",
+      "description": "The compact ghost-line mark and tracked event name anchoring every authentication and lobby header.",
+      "html": "<a class=\"ds-brand\" href=\"#\"><span><svg viewBox=\"0 0 48 48\" aria-hidden=\"true\"><path d=\"M9 39V21C9 12.2 15.7 5 24 5s15 7.2 15 16v18l-5-4-5 4-5-4-5 4-5-4-5 4Z\" fill=\"currentColor\" /><circle cx=\"18.5\" cy=\"21\" r=\"2.5\" fill=\"#09070f\" /><circle cx=\"29.5\" cy=\"21\" r=\"2.5\" fill=\"#09070f\" /><path d=\"M20 28.5c2.6 1.8 5.4 1.8 8 0\" fill=\"none\" stroke=\"#09070f\" stroke-width=\"2\" stroke-linecap=\"round\" /></svg></span>Ghost Hunt</a>",
+      "css": ".ds-brand { min-height: 44px; display: inline-flex; align-items: center; gap: 12px; border-radius: 2px; color: var(--ink, #f6f0e6); font: 800 15px/1 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.16em; text-decoration: none; text-transform: uppercase; } .ds-brand > span { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 9999px; background: var(--orange, #ff7a1a); color: var(--night, #09070f); box-shadow: 0 0 28px rgba(255,122,26,0.25); } .ds-brand svg { width: 28px; height: 28px; } .ds-brand:focus-visible { outline: 3px solid var(--cyan, #7df9e7); outline-offset: 3px; }"
+    },
+    {
+      "name": "Room Code Signal",
+      "kind": "custom",
+      "description": "The public room code isolated as a legible, copyable event signal.",
+      "html": "<div class=\"ds-room-code\"><span>Room code</span><strong>JJ2MSV</strong></div>",
+      "css": ".ds-room-code { border-left: 2px solid var(--orange, #ff7a1a); padding-left: 20px; color: var(--ink, #f6f0e6); } .ds-room-code span { display: block; color: #8d869b; font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; letter-spacing: 0.18em; text-transform: uppercase; } .ds-room-code strong { display: block; margin-top: 8px; font: 900 36px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; letter-spacing: 0.16em; }"
+    },
+    {
+      "name": "Copy Code Control",
+      "kind": "button",
+      "description": "The square utility action paired with the host room code.",
+      "html": "<button class=\"ds-copy\" aria-label=\"Copy room code\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"11\" height=\"11\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" /><path d=\"M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" /></svg></button>",
+      "css": ".ds-copy { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid #4a425c; border-radius: 0; background: transparent; color: var(--violet, #b9a4ff); transition: border-color 150ms, color 150ms; cursor: pointer; } .ds-copy svg { width: 20px; height: 20px; } .ds-copy:hover { border-color: var(--violet, #b9a4ff); color: #d7ceff; } .ds-copy:focus-visible { outline: 3px solid var(--cyan, #7df9e7); outline-offset: 3px; } .ds-copy:active { transform: translateY(1px); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night-Hunt Field Pass",
+    "overview": "The interface should feel like admission to a live after-dark hunt: immediate, coded, and operational rather than promotional. Ink-black violet space, oversized bone-white instructions, precise monospace signals, and a single hot orange action establish the event atmosphere without turning the screen into Halloween decoration.\n\nThe world is intentionally sparse. Fine lavender rules and translucent field-sheet surfaces organize live state while cyan marks the connection signal. The shipped login, lobby, and host views keep essential tasks prominent on narrow phones and allow the same hierarchy to breathe on desktop.",
+    "keyCharacteristics": [
+      "Near-black, edge-to-edge canvas with subtle violet and cyan ambient light.",
+      "Heavy, tightly tracked Bricolage Grotesque headlines paired with coded monospace metadata.",
+      "Safety-orange primary actions, cyan connection signals, and lavender emphasis.",
+      "Thin rules, modest 12–16px corners, and large room codes instead of generic dashboard chrome.",
+      "Text accompanies every color-coded state; touch controls remain at least 44px tall."
+    ],
+    "rules": [
+      {
+        "name": "The Signal Color Rule",
+        "body": "Cyan means connected, current, focused, or successfully completed; never use it as a competing primary action.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Hot Action Rule",
+        "body": "Orange identifies the immediate action. Keep it rare enough that the next step is obvious at a glance.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two-Voice Rule",
+        "body": "Bricolage speaks to people; monospace identifies rooms, channels, and terse system state.",
+        "section": "typography"
+      },
+      {
+        "name": "The Short-Display Rule",
+        "body": "Reserve the largest, tightest type for brief commands or rallying lines. Longer explanation stays in body scale.",
+        "section": "typography"
+      },
+      {
+        "name": "The Camera-Ready Density Rule",
+        "body": "Keep authentication and lobby UI compact, touch-safe, and portrait-first; desktop adds breathing room, not a second marketing story.",
+        "section": "layout"
+      },
+      {
+        "name": "The Local Glow Rule",
+        "body": "Glows belong to the brand mark, an active orange keyline, or a live cyan presence dot—not to whole panels or decorative text.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Selective Radius Rule",
+        "body": "Curve containment and touch controls; keep information rules, room-code utilities, and structural lists crisp.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do keep Safety Orange focused on the primary action and its supporting signal mark.",
+      "Do use Signal Cyan with explicit connection, focus, current-player, or success copy.",
+      "Do keep controls at least 44px tall and preserve the 3px cyan focus-visible outline.",
+      "Do use monospace selectively for room codes, channel labels, and terse state.",
+      "Do preserve the single-column phone hierarchy before introducing the shipped large-screen split.",
+      "Do honor reduced-motion preferences; the shipped room-signal entrance collapses to effectively immediate motion."
+    ],
+    "donts": [
+      "Don't place authentication inside a white card or turn the desktop split into a marketing panel.",
+      "Don't use cyan as a second primary action color or rely on color alone to communicate connection state.",
+      "Don't round every surface; squared rules, lists, and room-code utilities are part of the field-pass character.",
+      "Don't spread glows across large panels, paragraphs, or display headlines.",
+      "Don't substitute decorative Halloween typography for the shipped Bricolage-and-monospace pairing.",
+      "Don't introduce hover-only meaning on these touch-first surfaces."
+    ]
+  }
+}

@@ -4,6 +4,8 @@ export const MIN_GHOST_HITS = 3;
 export const MAX_GHOST_HITS = 12;
 export const ENCOUNTER_LEASE_MS = 60_000;
 export const MIN_HIT_INTERVAL_MS = 120;
+export const ROOM_CODE_LENGTH = 6;
+export const ROOM_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 export const ROOM_STATUSES = [
   "LOBBY",
