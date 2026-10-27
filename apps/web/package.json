@@ -1,0 +1,32 @@
+{
+  "name": "@ghost-hunt/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build --webpack",
+    "dev": "next dev --port ${WEB_PORT:-3000}",
+    "lint": "eslint .",
+    "prebuild": "npm run build -w @ghost-hunt/shared",
+    "predev": "npm run build -w @ghost-hunt/shared",
+    "pretypecheck": "npm run build -w @ghost-hunt/shared",
+    "start": "next start --port ${WEB_PORT:-3000}",
+    "typecheck": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@ghost-hunt/shared": "*",
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^20.19.43",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.3",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3"
+  }
+}

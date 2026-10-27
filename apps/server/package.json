@@ -1,0 +1,32 @@
+{
+  "name": "@ghost-hunt/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch src/index.ts",
+    "lint": "eslint src test",
+    "migrate": "tsx src/db/migrate-cli.ts",
+    "prebuild": "npm run build -w @ghost-hunt/shared",
+    "predev": "npm run build -w @ghost-hunt/shared",
+    "premigrate": "npm run build -w @ghost-hunt/shared",
+    "prestart": "npm run build -w @ghost-hunt/shared",
+    "pretest": "npm run build -w @ghost-hunt/shared",
+    "pretypecheck": "npm run build -w @ghost-hunt/shared",
+    "start": "node dist/index.js",
+    "test": "tsx --test test/**/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ghost-hunt/shared": "*",
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.5"
+  }
+}
