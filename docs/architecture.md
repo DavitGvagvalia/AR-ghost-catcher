@@ -7,7 +7,8 @@
 - `apps/server` is the authoritative Express process. It owns persistence,
   deadlines, encounter state, hit validation, and scoring.
 - `packages/shared` contains transport-safe contracts, event names, constants,
-  and Zod schemas. It contains no database or browser code.
+  Zod schemas, and the marker/model manifests. It contains no database or
+  browser code.
 - SQLite is the durable source of truth. Process memory must not become the
   authority for room or game state.
 
@@ -40,3 +41,15 @@ Only the foundation slice is present. In particular, there is currently no host
 or player authentication, room API, Socket.IO authorization, gameplay domain
 logic, CORS policy, rate limiting, reverse proxy, AR runtime, or production
 HTTPS/ngrok configuration. The health route is intentionally the only API route.
+
+## Asset manifests
+
+`MARKER_MANIFEST` is the one-to-one mapping from the 30 authoritative marker IDs
+to public `.patt` and printable image paths. `GHOST_MODEL_MANIFEST` records stable
+model IDs, integrity hashes, measured geometry data, embedded provenance, and
+explicit review status. Both packages can consume the same definitions without
+letting the browser choose authoritative scoring data.
+
+`npm run validate:assets` verifies the manifests against the files. It is an
+integrity and structure check, not a substitute for printed-marker recognition,
+model scale calibration, rights review, or mobile performance testing.

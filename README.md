@@ -10,6 +10,7 @@ The first foundation slice is implemented:
 - npm workspaces for the Next.js web app, Express API, and shared contracts
 - strict TypeScript and workspace-wide lint, format, build, and test commands
 - shared Zod payload schemas and the canonical 30 marker IDs
+- validated marker and GLB manifests with asset-integrity tests
 - SQLite startup with WAL, foreign keys, checksummed migrations, and the initial
   constrained schema
 - `GET /api/health`, backed by a live SQLite query
@@ -43,6 +44,11 @@ See [`docs/setup.md`](./docs/setup.md) for configuration and validation details.
 npm run format:check
 npm run lint
 npm run typecheck
+npm run validate:assets
 npm test
 npm run build
 ```
+
+Asset findings and unresolved production gates are documented in
+[`docs/marker-printing.md`](./docs/marker-printing.md) and
+[`docs/model-assets.md`](./docs/model-assets.md).

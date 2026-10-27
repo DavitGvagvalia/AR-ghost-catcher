@@ -58,6 +58,7 @@ web workspace.
 npm run format:check
 npm run lint
 npm run typecheck
+npm run validate:assets
 npm test
 npm run build
 ```

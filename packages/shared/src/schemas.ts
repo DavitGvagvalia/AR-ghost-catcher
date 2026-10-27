@@ -1,11 +1,13 @@
 import { z } from "zod";
 
 import { MARKER_IDS, ROOM_STATUSES } from "./constants.js";
+import { GHOST_MODEL_IDS } from "./ghost-manifest.js";
 
 const CONTROL_OR_FORMAT_CHARACTER = /[\p{Cc}\p{Cf}]/u;
 
 export const RoomStatusSchema = z.enum(ROOM_STATUSES);
 export const MarkerIdSchema = z.enum(MARKER_IDS);
+export const GhostModelIdSchema = z.enum(GHOST_MODEL_IDS);
 
 export const NicknameSchema = z
   .string()
