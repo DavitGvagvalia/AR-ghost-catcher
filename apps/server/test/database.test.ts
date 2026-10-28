@@ -20,7 +20,7 @@ test("database startup enables WAL and foreign keys and applies migrations", asy
       .prepare("SELECT COUNT(*) AS count FROM schema_migrations")
       .pluck()
       .get(),
-    1,
+    2,
   );
 
   const tables = database
@@ -48,7 +48,7 @@ test("database startup enables WAL and foreign keys and applies migrations", asy
       .prepare("SELECT COUNT(*) AS count FROM schema_migrations")
       .pluck()
       .get(),
-    1,
+    2,
   );
   reopened.close();
 });

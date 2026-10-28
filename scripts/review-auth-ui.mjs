@@ -13,16 +13,47 @@ const outputDirectory = resolve(".impeccable/review");
 
 await mkdir(outputDirectory, { recursive: true });
 
-const browser = await chromium.launch({ executablePath: chromePath, headless: true });
+const browser = await chromium.launch({
+  executablePath: chromePath,
+  headless: true,
+  args: ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"],
+});
 
 async function assertNoHorizontalOverflow(page, label) {
   const overflow = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,
+    roots: [document.documentElement, document.body, document.querySelector("main")].map(
+      (element) =>
+        element
+          ? {
+              tag: element.tagName,
+              style: element.getAttribute("style"),
+              computedWidth: getComputedStyle(element).width,
+              transform: getComputedStyle(element).transform,
+              position: getComputedStyle(element).position,
+              marginLeft: getComputedStyle(element).marginLeft,
+            }
+          : null,
+    ),
+    offenders: [...document.querySelectorAll("body *")]
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          tag: element.tagName,
+          id: element.id,
+          className: String(element.className),
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+        };
+      })
+      .filter((element) => element.right > document.documentElement.clientWidth + 1)
+      .slice(0, 8),
   }));
   if (overflow.scrollWidth > overflow.clientWidth) {
     throw new Error(
-      `${label} overflows horizontally: ${overflow.scrollWidth}px > ${overflow.clientWidth}px`,
+      `${label} overflows horizontally: ${overflow.scrollWidth}px > ${overflow.clientWidth}px; roots=${JSON.stringify(overflow.roots)}; offenders=${JSON.stringify(overflow.offenders)}`,
     );
   }
 }
@@ -49,6 +80,8 @@ try {
 
   const playerContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const player = await playerContext.newPage();
+  const playerPageErrors = [];
+  player.on("pageerror", (error) => playerPageErrors.push(error.message));
   await player.goto(`${baseUrl}/login`, { waitUntil: "networkidle" });
   await player.getByLabel("Room code").fill(roomCode);
   await player.getByLabel("Hunter name").fill("Review Hunter");
@@ -67,8 +100,38 @@ try {
   await host.getByRole("button", { name: "Start hunt" }).click();
   await host.getByText("Hunt in progress").waitFor();
   await player.waitForURL(/\/game/);
-  await player.getByRole("heading", { name: "The hunt is live." }).waitFor();
+  await player.getByRole("heading", { name: "Put a ghost in the room." }).waitFor();
   await assertNoHorizontalOverflow(player, "Mobile running match");
+  await player.screenshot({ path: resolve(outputDirectory, "mobile-game-gate.png") });
+  await player.getByRole("button", { name: "Enter hunt" }).click();
+  await player.getByText("Hold a printed marker steady in the frame.").waitFor({ timeout: 15_000 });
+  const cameraState = await player.evaluate(() => {
+    return [...document.querySelectorAll("video")].map((video) => {
+      const stream = video.srcObject;
+      return {
+        id: video.id,
+        className: video.className,
+        ownedByHunt: video.dataset.ghostHuntCamera === "true",
+        paused: video.paused,
+        readyState: video.readyState,
+        tracks:
+          stream instanceof MediaStream
+            ? stream.getVideoTracks().map((track) => track.readyState)
+            : [],
+      };
+    });
+  });
+  if (!cameraState.some((video) => video.tracks.includes("live"))) {
+    throw new Error(`AR camera did not expose a live video track: ${JSON.stringify(cameraState)}`);
+  }
+  if (!cameraState.some((video) => video.ownedByHunt && video.tracks.includes("live"))) {
+    throw new Error("AR camera readiness was reported before the hunt owned a live stream.");
+  }
+  await player.waitForTimeout(750);
+  if (playerPageErrors.length > 0) {
+    throw new Error(`Player page reported runtime errors: ${playerPageErrors.join(" | ")}`);
+  }
+  await assertNoHorizontalOverflow(player, "Mobile AR view");
   await player.screenshot({ path: resolve(outputDirectory, "mobile-game.png") });
   await host.screenshot({ path: resolve(outputDirectory, "desktop-host-running.png") });
 

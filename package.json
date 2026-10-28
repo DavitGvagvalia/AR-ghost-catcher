@@ -12,18 +12,22 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "build": "npm run build -w @ghost-hunt/shared && npm run build -w @ghost-hunt/server && npm run build -w @ghost-hunt/web",
+    "build": "npm run build -w @ghost-hunt/shared && npm run build -w @ghost-hunt/server && npm run build -w @ghost-hunt/web && npm run build -w @ghost-hunt/gateway",
     "dev": "concurrently -k -n web,server -c cyan,magenta \"npm run dev -w @ghost-hunt/web\" \"npm run dev -w @ghost-hunt/server\"",
     "dev:server": "npm run dev -w @ghost-hunt/server",
     "dev:web": "npm run dev -w @ghost-hunt/web",
+    "dev:gateway": "npm run dev -w @ghost-hunt/gateway",
+    "dev:event": "concurrently -k -n web,server,gateway -c cyan,magenta,yellow \"npm run dev -w @ghost-hunt/web\" \"npm run dev -w @ghost-hunt/server\" \"npm run dev -w @ghost-hunt/gateway\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint scripts tests && npm run lint --workspaces --if-present",
     "migrate": "npm run migrate -w @ghost-hunt/server",
+    "markers:pdf": "python3 scripts/markers/generate-print-pack.py",
     "review:ui": "node scripts/review-auth-ui.mjs",
     "pretest": "npm run build -w @ghost-hunt/shared",
     "prevalidate:assets": "npm run build -w @ghost-hunt/shared",
     "start": "concurrently -k -n web,server -c cyan,magenta \"npm run start -w @ghost-hunt/web\" \"npm run start -w @ghost-hunt/server\"",
+    "start:event": "concurrently -k -n web,server,gateway -c cyan,magenta,yellow \"npm run start -w @ghost-hunt/web\" \"npm run start -w @ghost-hunt/server\" \"npm run start -w @ghost-hunt/gateway\"",
     "test": "node --test tests/integration/assets.test.mjs && npm run test --workspaces --if-present",
     "validate:assets": "node --test tests/integration/assets.test.mjs",
     "typecheck": "npm run typecheck --workspaces --if-present"

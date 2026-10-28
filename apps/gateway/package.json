@@ -1,0 +1,20 @@
+{
+  "name": "@ghost-hunt/gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch src/index.ts",
+    "lint": "eslint src",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "http-proxy": "1.18.1"
+  },
+  "devDependencies": {
+    "@types/http-proxy": "1.17.17",
+    "@types/node": "^26.6.5"
+  }
+}

@@ -11,6 +11,7 @@ import {
   type RoomRecord,
 } from "../db/repositories/room-repository.js";
 import { AppError } from "../utils/app-error.js";
+import type { EncounterService } from "./encounter-service.js";
 import {
   createId,
   createOpaqueToken,
@@ -44,6 +45,7 @@ export interface JoinedRoom {
 export interface RoomServiceOptions {
   now?: () => number;
   matchDurationMs?: number;
+  encounterService?: EncounterService;
 }
 
 function isUniqueConstraint(error: unknown): boolean {
@@ -59,11 +61,13 @@ export class RoomService {
   readonly #rooms: RoomRepository;
   readonly #now: () => number;
   readonly #matchDurationMs: number;
+  readonly #encounterService: EncounterService | undefined;
 
   constructor(rooms: RoomRepository, options: RoomServiceOptions = {}) {
     this.#rooms = rooms;
     this.#now = options.now ?? Date.now;
     this.#matchDurationMs = options.matchDurationMs ?? MATCH_DURATION_MS;
+    this.#encounterService = options.encounterService;
   }
 
   createRoom(): CreatedRoom {
@@ -227,6 +231,19 @@ export class RoomService {
       throw new AppError(404, "ROOM_NOT_FOUND", "Room not found.");
     }
 
+    const encounterState = this.#encounterService?.getRoomSnapshot(
+      room.id,
+      session.playerId,
+    ) ?? {
+      markers: MARKER_IDS.map((markerId) => ({
+        markerId,
+        status: "AVAILABLE" as const,
+        cooldownUntil: null,
+        reservedByCurrentPlayer: false,
+      })),
+      activeEncounter: null,
+    };
+
     return {
       room: {
         code: room.code,
@@ -239,6 +256,7 @@ export class RoomService {
       role: session.role,
       currentPlayerId: session.playerId,
       serverTime: this.#now(),
+      ...encounterState,
     };
   }
 

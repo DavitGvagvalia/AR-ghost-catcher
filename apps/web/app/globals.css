@@ -28,8 +28,9 @@ html {
 }
 
 body {
+  width: 100% !important;
   min-height: 100dvh;
-  margin: 0;
+  margin: 0 !important;
   background:
     radial-gradient(circle at 82% 4%, rgb(67 42 107 / 32%), transparent 28rem),
     radial-gradient(circle at 10% 90%, rgb(23 104 104 / 16%), transparent 24rem),
@@ -44,6 +45,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
 ::selection { background: rgb(255 122 26 / 38%); color: #fff; }
 :focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
 input::placeholder { color: #9b94a7; }
+
+#arjs-video[data-ghost-hunt-camera="true"] {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100dvh !important;
+  margin: 0 !important;
+  object-fit: cover !important;
+  z-index: 0 !important;
+}
 
 @keyframes room-signal {
   from { opacity: 0; transform: translateY(10px); }

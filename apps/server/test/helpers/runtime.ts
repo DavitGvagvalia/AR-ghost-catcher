@@ -9,7 +9,12 @@ import { RoomEvents } from "../../src/domain/room-events.js";
 import { RoomService } from "../../src/domain/room-service.js";
 import type { RoomServiceOptions } from "../../src/domain/room-service.js";
 import {
+  EncounterService,
+  type EncounterServiceOptions,
+} from "../../src/domain/encounter-service.js";
+import {
   createSocketServer,
+  type SocketRateLimitOptions,
   type GameSocketServer,
 } from "../../src/sockets/handlers.js";
 
@@ -19,6 +24,7 @@ export interface TestRuntime {
   database: GameDatabase;
   roomService: RoomService;
   roomEvents: RoomEvents;
+  encounterService: EncounterService;
   server: HttpServer;
   io?: GameSocketServer;
   baseUrl: string;
@@ -28,11 +34,17 @@ export interface TestRuntime {
 export async function createTestRuntime(
   withSockets = false,
   roomServiceOptions: RoomServiceOptions = {},
+  encounterServiceOptions: EncounterServiceOptions = {},
+  socketRateLimitOptions: SocketRateLimitOptions = {},
 ): Promise<TestRuntime> {
   const database = openDatabase({ path: ":memory:" });
+  const encounterService = new EncounterService(database, {
+    ...(roomServiceOptions.now ? { now: roomServiceOptions.now } : {}),
+    ...encounterServiceOptions,
+  });
   const roomService = new RoomService(
     new RoomRepository(database),
-    roomServiceOptions,
+    { ...roomServiceOptions, encounterService },
   );
   const roomEvents = new RoomEvents();
   const server = createServer(
@@ -44,7 +56,14 @@ export async function createTestRuntime(
     }),
   );
   const io = withSockets
-    ? createSocketServer(server, roomService, roomEvents, TEST_ORIGIN)
+    ? createSocketServer(
+        server,
+        roomService,
+        roomEvents,
+        encounterService,
+        TEST_ORIGIN,
+        socketRateLimitOptions,
+      )
     : undefined;
 
   await new Promise<void>((resolve, reject) => {
@@ -59,6 +78,7 @@ export async function createTestRuntime(
     database,
     roomService,
     roomEvents,
+    encounterService,
     server,
     ...(io ? { io } : {}),
     baseUrl: `http://127.0.0.1:${address.port}`,

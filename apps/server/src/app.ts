@@ -4,6 +4,7 @@ import helmet from "helmet";
 
 import { RoomEvents } from "./domain/room-events.js";
 import { RoomService } from "./domain/room-service.js";
+import { EncounterService } from "./domain/encounter-service.js";
 import { RoomRepository } from "./db/repositories/room-repository.js";
 import type { GameDatabase } from "./db/migrations/types.js";
 import { createHealthRouter } from "./http/routes/health.js";
@@ -24,7 +25,10 @@ export function createApp(
   const app = express();
   const publicOrigin = options.publicOrigin ?? "http://localhost:3000";
   const roomService =
-    options.roomService ?? new RoomService(new RoomRepository(database));
+    options.roomService ??
+    new RoomService(new RoomRepository(database), {
+      encounterService: new EncounterService(database),
+    });
   const roomEvents = options.roomEvents ?? new RoomEvents();
 
   app.disable("x-powered-by");

@@ -4,6 +4,10 @@ import test from "node:test";
 import type {
   ClientToServerEvents,
   CreateRoomResponse,
+  EncounterClaimedPayload,
+  EncounterDefeatedPayload,
+  EncounterHitResultPayload,
+  GameActionResult,
   JoinRoomResponse,
   RoomState,
   RoomSubscribeResult,
@@ -97,6 +101,26 @@ async function subscribe(
   });
 }
 
+async function claimMarker(
+  socket: GameClientSocket,
+  markerId: "marker-01",
+  requestId: string,
+): Promise<GameActionResult<EncounterClaimedPayload>> {
+  return new Promise((resolve) => {
+    socket.emit("marker:claim", { markerId, requestId }, resolve);
+  });
+}
+
+async function hitEncounter(
+  socket: GameClientSocket,
+  encounterId: string,
+  attackId: string,
+): Promise<GameActionResult<EncounterHitResultPayload | EncounterDefeatedPayload>> {
+  return new Promise((resolve) => {
+    socket.emit("encounter:hit", { encounterId, attackId }, resolve);
+  });
+}
+
 function waitForRoomState(
   socket: GameClientSocket,
   predicate: (state: RoomState) => boolean,
@@ -178,4 +202,73 @@ test("Socket.IO rejects connections without an issued session", async (t) => {
   });
 
   assert.match(error.message, /join or create a room/iu);
+});
+
+test("Socket.IO validates subscribed encounter actions, scores a defeat, and rate-limits claims", async (t) => {
+  const runtime = await createTestRuntime(
+    true,
+    {},
+    {
+      minGhostHits: 3,
+      maxGhostHits: 3,
+      minHitIntervalMs: 0,
+      randomIndex: () => 0,
+    },
+    { claimsPerWindow: 1 },
+  );
+  t.after(runtime.close);
+  const room = await createRoom(runtime.baseUrl);
+  const roomCode = room.body.state.room.code;
+  const player = await joinRoom(runtime.baseUrl, roomCode);
+
+  const startResponse = await fetch(`${runtime.baseUrl}/api/rooms/${roomCode}/start`, {
+    method: "POST",
+    headers: { Cookie: room.cookie, Origin: TEST_ORIGIN },
+  });
+  assert.equal(startResponse.status, 200);
+
+  const socket = connectSocket(runtime.baseUrl, player.cookie);
+  t.after(() => socket.disconnect());
+  await waitForConnect(socket);
+
+  const beforeSubscribe = await claimMarker(socket, "marker-01", "claim-before-subscribe");
+  assert.equal(beforeSubscribe.ok, false);
+  if (!beforeSubscribe.ok) {
+    assert.equal(beforeSubscribe.error.code, "ROOM_NOT_SUBSCRIBED");
+  }
+
+  const subscription = await subscribe(socket, roomCode);
+  assert.equal(subscription.ok, true);
+
+  const claim = await claimMarker(socket, "marker-01", "claim-transport-01");
+  assert.equal(claim.ok, true);
+  if (!claim.ok) return;
+  assert.equal(claim.data.requiredHits, 3);
+
+  const limitedClaim = await claimMarker(socket, "marker-01", "claim-transport-02");
+  assert.equal(limitedClaim.ok, false);
+  if (!limitedClaim.ok) {
+    assert.equal(limitedClaim.error.code, "ACTION_RATE_LIMITED");
+  }
+
+  const firstHit = await hitEncounter(socket, claim.data.encounterId, "attack-01");
+  assert.equal(firstHit.ok, true);
+  if (firstHit.ok && !("pointsAwarded" in firstHit.data)) {
+    assert.equal(firstHit.data.remainingHits, 2);
+  }
+
+  const secondHit = await hitEncounter(socket, claim.data.encounterId, "attack-02");
+  assert.equal(secondHit.ok, true);
+  if (secondHit.ok && !("pointsAwarded" in secondHit.data)) {
+    assert.equal(secondHit.data.remainingHits, 1);
+  }
+
+  const defeat = await hitEncounter(socket, claim.data.encounterId, "attack-03");
+  assert.equal(defeat.ok, true);
+  if (defeat.ok && "pointsAwarded" in defeat.data) {
+    assert.equal(defeat.data.pointsAwarded, 3);
+    assert.equal(defeat.data.score, 3);
+  } else {
+    assert.fail("Expected the third accepted hit to defeat the encounter");
+  }
 });

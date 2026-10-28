@@ -1,4 +1,5 @@
 import type { MarkerId, RoomStatus } from "./constants.js";
+import type { GhostModelId } from "./ghost-manifest.js";
 
 export interface HealthResponse {
   status: "ok";
@@ -44,6 +45,51 @@ export interface RoomState {
   role: RoomRole;
   currentPlayerId: string | null;
   serverTime: number;
+  markers: MarkerRuntimeState[];
+  activeEncounter: EncounterSnapshot | null;
+}
+
+export type MarkerRuntimeStatus = "AVAILABLE" | "RESERVED" | "COOLDOWN";
+
+export interface MarkerRuntimeState {
+  markerId: MarkerId;
+  status: MarkerRuntimeStatus;
+  cooldownUntil: number | null;
+  reservedByCurrentPlayer: boolean;
+}
+
+export interface EncounterSnapshot {
+  encounterId: string;
+  markerId: MarkerId;
+  ghostModelId: GhostModelId;
+  requiredHits: number;
+  registeredHits: number;
+  remainingHits: number;
+  leaseExpiresAt: number;
+}
+
+export interface EncounterClaimedPayload extends EncounterSnapshot {
+  requestId: string;
+}
+
+export interface EncounterHitResultPayload extends EncounterSnapshot {
+  attackId: string;
+  duplicate: boolean;
+}
+
+export interface EncounterDefeatedPayload {
+  encounterId: string;
+  markerId: MarkerId;
+  attackId: string;
+  pointsAwarded: number;
+  score: number;
+  cooldownUntil: number;
+  duplicate: boolean;
+}
+
+export interface EncounterAbandonedPayload {
+  encounterId: string;
+  markerId: MarkerId;
 }
 
 export interface CreateRoomResponse {
@@ -95,4 +141,8 @@ export interface RoomSubscribePayload {
 
 export type RoomSubscribeResult =
   | { ok: true; state: RoomState }
+  | { ok: false; error: ApiErrorResponse["error"] };
+
+export type GameActionResult<T> =
+  | { ok: true; data: T }
   | { ok: false; error: ApiErrorResponse["error"] };

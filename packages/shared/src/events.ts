@@ -1,5 +1,11 @@
 import type {
   ApiErrorResponse,
+  EncounterAbandonedPayload,
+  EncounterClaimedPayload,
+  EncounterDefeatedPayload,
+  EncounterHitResultPayload,
+  GameActionResult,
+  MarkerRuntimeState,
   RoomState,
   RoomSubscribePayload,
   RoomSubscribeResult,
@@ -37,9 +43,22 @@ export interface ClientToServerEvents {
     acknowledge: (result: RoomSubscribeResult) => void,
   ) => void;
   "room:sync": (acknowledge: (result: RoomSubscribeResult) => void) => void;
-  "marker:claim": (payload: MarkerClaimPayload) => void;
-  "encounter:hit": (payload: EncounterHitPayload) => void;
-  "encounter:abandon": (payload: EncounterAbandonPayload) => void;
+  "marker:claim": (
+    payload: MarkerClaimPayload,
+    acknowledge: (result: GameActionResult<EncounterClaimedPayload>) => void,
+  ) => void;
+  "encounter:hit": (
+    payload: EncounterHitPayload,
+    acknowledge: (
+      result: GameActionResult<
+        EncounterHitResultPayload | EncounterDefeatedPayload
+      >,
+    ) => void,
+  ) => void;
+  "encounter:abandon": (
+    payload: EncounterAbandonPayload,
+    acknowledge: (result: GameActionResult<EncounterAbandonedPayload>) => void,
+  ) => void;
 }
 
 export interface ServerToClientEvents {
@@ -47,10 +66,10 @@ export interface ServerToClientEvents {
   "room:started": (payload: { startedAt: number; endsAt: number }) => void;
   "room:expired": () => void;
   "room:finished": () => void;
-  "marker:state": (payload: unknown) => void;
-  "encounter:claimed": (payload: unknown) => void;
-  "encounter:hit-result": (payload: unknown) => void;
-  "encounter:defeated": (payload: unknown) => void;
-  "score:updated": (payload: unknown) => void;
+  "marker:state": (payload: MarkerRuntimeState) => void;
+  "encounter:claimed": (payload: EncounterClaimedPayload) => void;
+  "encounter:hit-result": (payload: EncounterHitResultPayload) => void;
+  "encounter:defeated": (payload: EncounterDefeatedPayload) => void;
+  "score:updated": (payload: { playerId: string; score: number }) => void;
   "game:error": (error: ApiErrorResponse["error"]) => void;
 }

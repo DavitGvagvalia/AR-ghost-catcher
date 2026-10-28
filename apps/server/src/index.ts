@@ -6,13 +6,22 @@ import { openDatabase } from "./db/connection.js";
 import { RoomRepository } from "./db/repositories/room-repository.js";
 import { RoomEvents } from "./domain/room-events.js";
 import { RoomService } from "./domain/room-service.js";
+import { EncounterService } from "./domain/encounter-service.js";
 import { MatchExpirationJob } from "./jobs/match-expiration.js";
 import { createSocketServer } from "./sockets/handlers.js";
 
 const config = readServerConfig();
 const database = openDatabase({ path: config.databasePath });
+const encounterService = new EncounterService(database, {
+  encounterLeaseMs: config.encounterLeaseMs,
+  markerCooldownMs: config.markerCooldownMs,
+  minGhostHits: config.minGhostHits,
+  maxGhostHits: config.maxGhostHits,
+  minHitIntervalMs: config.minHitIntervalMs,
+});
 const roomService = new RoomService(new RoomRepository(database), {
   matchDurationMs: config.matchDurationMs,
+  encounterService,
 });
 roomService.resetAllPresence();
 roomService.expireDueRooms();
@@ -28,6 +37,7 @@ const io = createSocketServer(
   httpServer,
   roomService,
   roomEvents,
+  encounterService,
   config.publicOrigin,
 );
 const matchExpirationJob = new MatchExpirationJob(roomService, roomEvents);

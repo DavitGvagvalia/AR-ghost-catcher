@@ -32,8 +32,15 @@ export function useRoomChannel(roomCode: string, initialState: RoomState) {
     socket.on("connect_error", connectError);
     socket.on("room:state", setRoomState);
     if (socket.connected) subscribe(); else socket.connect();
+    const syncTimer = window.setInterval(() => {
+      if (!socket.connected) return;
+      socket.emit("room:sync", (result) => {
+        if (result.ok) setRoomState(result.state);
+      });
+    }, 5_000);
 
     return () => {
+      window.clearInterval(syncTimer);
       socket.off("connect", subscribe);
       socket.off("disconnect", disconnect);
       socket.off("connect_error", connectError);
