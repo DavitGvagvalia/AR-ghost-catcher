@@ -10,6 +10,9 @@ import { useEffect, useRef, useState } from "react";
 
 const STABLE_MARKER_MS = 500;
 const MODEL_TARGET_SIZE = 0.82;
+const AR_DETECTION_WIDTH = 640;
+const AR_DETECTION_HEIGHT = 480;
+const MARKER_MIN_CONFIDENCE = 0.55;
 
 interface VectorLike {
   x: number;
@@ -234,7 +237,7 @@ export function ArHuntScene({
         );
         scene.setAttribute(
           "arjs",
-          "sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; maxDetectionRate: 30",
+          `sourceType: webcam; debugUIEnabled: false; detectionMode: mono; maxDetectionRate: 30; canvasWidth: ${AR_DETECTION_WIDTH}; canvasHeight: ${AR_DETECTION_HEIGHT}`,
         );
         scene.style.position = "absolute";
         scene.style.inset = "0";
@@ -248,10 +251,14 @@ export function ArHuntScene({
             marker.setAttribute("type", "pattern");
             marker.setAttribute("url", definition.patternPath);
             marker.setAttribute("emitevents", "true");
+            marker.setAttribute(
+              "min-confidence",
+              String(MARKER_MIN_CONFIDENCE),
+            );
             marker.setAttribute("smooth", "true");
-            marker.setAttribute("smoothCount", "5");
-            marker.setAttribute("smoothTolerance", "0.01");
-            marker.setAttribute("smoothThreshold", "2");
+            marker.setAttribute("smooth-count", "5");
+            marker.setAttribute("smooth-tolerance", "0.01");
+            marker.setAttribute("smooth-threshold", "2");
             marker.dataset.markerId = definition.id;
 
             marker.addEventListener("markerFound", () => {
@@ -294,7 +301,6 @@ export function ArHuntScene({
         };
 
         const camera = document.createElement("a-entity");
-        camera.setAttribute("scale","0.1 0.1 0.1")
         camera.setAttribute("camera", "");
         camera.setAttribute("cursor", "rayOrigin: mouse; fuse: false");
         camera.setAttribute("raycaster", "objects: .attackable; far: 20");

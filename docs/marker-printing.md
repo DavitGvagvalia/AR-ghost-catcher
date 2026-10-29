@@ -54,10 +54,13 @@ mandatory.
 1. Print the PDF on A4 paper at **actual size / 100%**. Disable “fit to page”.
 2. Measure the 100 mm calibration bar. If it is not 100 mm, correct the printer
    scaling before producing placement sheets.
-3. Keep labels and cut guides outside the black marker border. Do not crop,
+3. Preserve a broad white quiet zone around all four sides of the black marker
+   border. Do not trim flush to the black square or mount it directly against a
+   dark background without white backing.
+4. Keep labels and cut guides outside the black marker border. Do not crop,
    cover, recolor, stretch, laminate with a highly reflective finish, or add
    writing inside a marker.
-4. Place markers on flat, rigid surfaces with enough ambient light and minimal
+5. Place markers on flat, rigid surfaces with enough ambient light and minimal
    glare. Record each physical location by its printed ID.
 
 AR.js describes pattern markers as a high-contrast image and generated `.patt`

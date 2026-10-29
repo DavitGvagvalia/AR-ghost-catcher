@@ -27,6 +27,8 @@ For every run, record:
 5. For each marker, test near/far distance, at least three viewing angles, bright
    and dim lighting, and partial occlusion. Exercise `marker-16` and `marker-18`
    together because they are the closest measured pattern pair.
+   Record the smallest reliable fraction of the camera frame for each device;
+   the configured 640x480 tracking resolution is not a guaranteed distance.
 6. Put two and then several markers in view. Confirm one deterministic claim is
    made and repeated detection events do not create duplicate encounters.
 7. Temporarily move the active marker out of view. Confirm attacks pause, the

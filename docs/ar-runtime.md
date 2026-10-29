@@ -24,3 +24,18 @@ To reproduce the files:
 
 Do not silently upgrade either runtime. Re-run marker recognition and real-device
 iOS/Android tests before changing these versions.
+
+## Marker tracking profile
+
+The player overrides AR.js's lower-resolution phone profile and processes marker
+detection at 640x480. It uses pattern-only `mono` detection because the game does
+not use barcode markers, retains a 30 Hz maximum detection rate, and applies a
+0.55 minimum confidence to each pattern marker. The confidence value is a
+deliberate compromise: lowering it further may recover weaker images but also
+increases false matches across the 30 registered patterns.
+
+The 640x480 profile processes four times as many pixels as AR.js's 320x240 phone
+default. Do not increase it again without completing the 30-minute battery and
+thermal runs in `docs/ios-test-plan.md`. Recognition distance and false-positive
+rates must be measured on the actual event phones; these parameters cannot make
+an underexposed, blurred, or under-resolved marker reliable.

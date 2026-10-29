@@ -1,5 +1,6 @@
 /* global Buffer, console, document, process */
 
+import assert from "node:assert/strict";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -14,9 +15,11 @@ const chromePath =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const frameWidth = 640;
 const frameHeight = 480;
-const markerSize = 300;
+const markerSize = 128;
 const frameRate = 5;
 const frameCount = 150;
+const mobileUserAgent =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1";
 
 function launchFakeCameraBrowser(path) {
   return chromium.launch({
@@ -87,6 +90,7 @@ try {
   browser = await launchFakeCameraBrowser(videoPath);
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
+    userAgent: mobileUserAgent,
   });
   const page = await context.newPage();
   const pageErrors = [];
@@ -99,11 +103,32 @@ try {
     timeout: 20_000,
   });
 
+  const trackingConfiguration = await page.evaluate(() => {
+    const scene = document.querySelector("a-scene");
+    const marker = document.querySelector("a-marker");
+    return {
+      canvasWidth:
+        scene?.systems?.arjs?._arProfile?.contextParameters?.canvasWidth,
+      canvasHeight:
+        scene?.systems?.arjs?._arProfile?.contextParameters?.canvasHeight,
+      detectionMode:
+        scene?.systems?.arjs?._arProfile?.contextParameters?.detectionMode,
+      markerMinConfidence:
+        marker?.components?.["arjs-anchor"]?.data?.minConfidence,
+    };
+  });
+  assert.deepEqual(trackingConfiguration, {
+    canvasWidth: 640,
+    canvasHeight: 480,
+    detectionMode: "mono",
+    markerMinConfidence: 0.55,
+  });
+
   if (pageErrors.length > 0) {
     throw new Error(`Marker page errors: ${pageErrors.join(" | ")}`);
   }
   console.log(
-    "AR.js recognized marker-01 from the deterministic fake-camera video.",
+    "AR.js recognized a 128 px marker-01 with the 640x480 mobile tracking profile.",
   );
   await context.close();
 
