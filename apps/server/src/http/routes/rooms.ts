@@ -168,7 +168,9 @@ export function createRoomsRouter({
         hostToken: cookies[HOST_SESSION_COOKIE],
         playerToken: cookies[PLAYER_SESSION_COOKIE],
       });
-      const body: ResultsResponse = { results: roomService.getResults(session) };
+      const body: ResultsResponse = {
+        results: roomService.getResults(session),
+      };
       response.setHeader("Cache-Control", "no-store");
       response.status(200).json(body);
     } catch (error) {
@@ -176,54 +178,46 @@ export function createRoomsRouter({
     }
   });
 
-  router.post(
-    "/:code/start",
-    hostActionLimit,
-    (request, response, next) => {
-      try {
-        const code = parseRoomCode(request);
-        const cookies = readCookies(request.headers.cookie);
-        const session = roomService.authenticateForRoom(code, {
-          hostToken: cookies[HOST_SESSION_COOKIE],
-          playerToken: cookies[PLAYER_SESSION_COOKIE],
-        });
-        const body: RoomTransitionResponse = {
-          state: roomService.startMatch(session),
-        };
-        response.setHeader("Cache-Control", "no-store");
-        response.status(200).json(body);
-        notifyRoom(roomEvents, session.roomId, "STARTED");
-      } catch (error) {
-        next(error instanceof z.ZodError ? validationError(error) : error);
-      }
-    },
-  );
+  router.post("/:code/start", hostActionLimit, (request, response, next) => {
+    try {
+      const code = parseRoomCode(request);
+      const cookies = readCookies(request.headers.cookie);
+      const session = roomService.authenticateForRoom(code, {
+        hostToken: cookies[HOST_SESSION_COOKIE],
+        playerToken: cookies[PLAYER_SESSION_COOKIE],
+      });
+      const body: RoomTransitionResponse = {
+        state: roomService.startMatch(session),
+      };
+      response.setHeader("Cache-Control", "no-store");
+      response.status(200).json(body);
+      notifyRoom(roomEvents, session.roomId, "STARTED");
+    } catch (error) {
+      next(error instanceof z.ZodError ? validationError(error) : error);
+    }
+  });
 
-  router.post(
-    "/:code/end",
-    hostActionLimit,
-    (request, response, next) => {
-      try {
-        const code = parseRoomCode(request);
-        const cookies = readCookies(request.headers.cookie);
-        const session = roomService.authenticateForRoom(code, {
-          hostToken: cookies[HOST_SESSION_COOKIE],
-          playerToken: cookies[PLAYER_SESSION_COOKIE],
-        });
-        const before = roomService.getState(session).room.status;
-        const body: RoomTransitionResponse = {
-          state: roomService.finalizeMatch(session),
-        };
-        response.setHeader("Cache-Control", "no-store");
-        response.status(200).json(body);
-        if (before !== "FINISHED") {
-          notifyRoom(roomEvents, session.roomId, "FINISHED");
-        }
-      } catch (error) {
-        next(error instanceof z.ZodError ? validationError(error) : error);
+  router.post("/:code/end", hostActionLimit, (request, response, next) => {
+    try {
+      const code = parseRoomCode(request);
+      const cookies = readCookies(request.headers.cookie);
+      const session = roomService.authenticateForRoom(code, {
+        hostToken: cookies[HOST_SESSION_COOKIE],
+        playerToken: cookies[PLAYER_SESSION_COOKIE],
+      });
+      const before = roomService.getState(session).room.status;
+      const body: RoomTransitionResponse = {
+        state: roomService.finalizeMatch(session),
+      };
+      response.setHeader("Cache-Control", "no-store");
+      response.status(200).json(body);
+      if (before !== "FINISHED") {
+        notifyRoom(roomEvents, session.roomId, "FINISHED");
       }
-    },
-  );
+    } catch (error) {
+      next(error instanceof z.ZodError ? validationError(error) : error);
+    }
+  });
 
   return router;
 }

@@ -2,7 +2,9 @@ const PLAYER_ROOM_KEY = "ghost-hunt.player-room";
 const HOST_ROOM_KEY = "ghost-hunt.host-room";
 
 function read(key: string): string | null {
-  return typeof window === "undefined" ? null : window.localStorage.getItem(key);
+  return typeof window === "undefined"
+    ? null
+    : window.localStorage.getItem(key);
 }
 
 function write(key: string, value: string): void {

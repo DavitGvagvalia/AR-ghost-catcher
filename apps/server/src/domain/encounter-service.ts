@@ -55,7 +55,7 @@ interface EncounterRow {
 }
 
 const playableGhostIds = GHOST_MODEL_MANIFEST.filter(
-  (model) => model.mobileReadiness === "CANDIDATE",
+  (model) => model.mobileReadiness === "CANDIDATE" && model.serverSelectable,
 ).map((model) => model.id);
 
 function encounterSnapshot(row: EncounterRow): EncounterSnapshot {
@@ -206,9 +206,8 @@ export class EncounterService {
         );
       }
 
-      const ghostModelId = playableGhostIds[
-        this.#randomIndex(playableGhostIds.length)
-      ];
+      const ghostModelId =
+        playableGhostIds[this.#randomIndex(playableGhostIds.length)];
       if (!ghostModelId) throw new Error("No playable ghost models configured");
       const requiredHits =
         this.#minGhostHits +
@@ -374,12 +373,7 @@ export class EncounterService {
            SET active_encounter_id = NULL, cooldown_until = ?
            WHERE room_id = ? AND marker_id = ? AND active_encounter_id = ?`,
         )
-        .run(
-          cooldownUntil,
-          session.roomId,
-          encounter.markerId,
-          encounterId,
-        );
+        .run(cooldownUntil, session.roomId, encounter.markerId, encounterId);
 
       const score = this.#database
         .prepare("SELECT score FROM players WHERE id = ?")
@@ -487,7 +481,12 @@ export class EncounterService {
     const room = this.#database
       .prepare("SELECT status, ends_at AS endsAt FROM rooms WHERE id = ?")
       .get(roomId) as { status: string; endsAt: number | null } | undefined;
-    if (!room || room.status !== "RUNNING" || !room.endsAt || room.endsAt <= now) {
+    if (
+      !room ||
+      room.status !== "RUNNING" ||
+      !room.endsAt ||
+      room.endsAt <= now
+    ) {
       throw new AppError(
         409,
         "MATCH_NOT_RUNNING",

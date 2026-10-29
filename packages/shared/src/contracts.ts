@@ -39,6 +39,11 @@ export interface PlayerSummary {
 
 export type RoomRole = "HOST" | "PLAYER";
 
+export interface SocketAuthPayload {
+  roomCode: string;
+  role: RoomRole;
+}
+
 export interface RoomState {
   room: RoomSummary;
   players: PlayerSummary[];
@@ -144,5 +149,4 @@ export type RoomSubscribeResult =
   | { ok: false; error: ApiErrorResponse["error"] };
 
 export type GameActionResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: ApiErrorResponse["error"] };
+  { ok: true; data: T } | { ok: false; error: ApiErrorResponse["error"] };

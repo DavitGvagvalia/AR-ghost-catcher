@@ -9,7 +9,10 @@ import { openDatabase } from "../src/db/connection.js";
 
 test("GET /api/health reports an actual SQLite readiness check", async (t) => {
   const database = openDatabase({ path: ":memory:" });
-  const server = createApp(database).listen(0, "127.0.0.1");
+  const app = createApp(database);
+  const server = app.listen(0, "127.0.0.1");
+
+  assert.equal(app.get("trust proxy"), 1);
 
   await new Promise<void>((resolve, reject) => {
     server.once("listening", resolve);

@@ -1,5 +1,6 @@
 import {
   RoomSubscribePayloadSchema,
+  SocketAuthPayloadSchema,
   MarkerClaimPayloadSchema,
   EncounterHitPayloadSchema,
   EncounterAbandonPayloadSchema,
@@ -110,6 +111,7 @@ export function createSocketServer(
 ): GameSocketServer {
   const io: GameSocketServer = new Server(httpServer, {
     cors: { origin: publicOrigin, credentials: true },
+    maxHttpBufferSize: 16 * 1024,
     allowRequest: (request, callback) => {
       const origin = request.headers.origin;
       callback(null, origin === undefined || origin === publicOrigin);
@@ -135,7 +137,11 @@ export function createSocketServer(
     }
     const playerId = socket.data.session.playerId;
     if (!playerId) {
-      throw new AppError(403, "PLAYER_REQUIRED", "Only a player can perform that action.");
+      throw new AppError(
+        403,
+        "PLAYER_REQUIRED",
+        "Only a player can perform that action.",
+      );
     }
     return playerId;
   };
@@ -191,11 +197,14 @@ export function createSocketServer(
 
   io.use((socket, next) => {
     try {
+      const auth = SocketAuthPayloadSchema.parse(socket.handshake.auth);
       const cookies = readCookies(socket.request.headers.cookie);
-      socket.data.session = roomService.authenticateSession({
-        hostToken: cookies[HOST_SESSION_COOKIE],
-        playerToken: cookies[PLAYER_SESSION_COOKIE],
-      });
+      socket.data.session = roomService.authenticateForRoom(
+        auth.roomCode,
+        auth.role === "HOST"
+          ? { hostToken: cookies[HOST_SESSION_COOKIE] }
+          : { playerToken: cookies[PLAYER_SESSION_COOKIE] },
+      );
       next();
     } catch (error) {
       const result = safeError(error);
@@ -294,13 +303,10 @@ export function createSocketServer(
         acknowledge({ ok: true, data: result });
         if ("pointsAwarded" in result) {
           socket.emit("encounter:defeated", result);
-          io.to(roomChannel(socket.data.session.roomId)).emit(
-            "score:updated",
-            {
-              playerId,
-              score: result.score,
-            },
-          );
+          io.to(roomChannel(socket.data.session.roomId)).emit("score:updated", {
+            playerId,
+            score: result.score,
+          });
           await publishRoomState(socket.data.session.roomId);
         } else {
           socket.emit("encounter:hit-result", result);

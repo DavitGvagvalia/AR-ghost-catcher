@@ -1,55 +1,87 @@
 # Architecture
 
-## Boundaries
+## Runtime boundaries
 
-- `apps/web` is the Next.js App Router client. AR.js/A-Frame will be added as a
-  client-only runtime in a later slice.
-- `apps/server` is the authoritative Express process. It owns persistence,
-  deadlines, encounter state, hit validation, and scoring.
-- `packages/shared` contains transport-safe contracts, event names, constants,
-  Zod schemas, and the marker/model manifests. It contains no database or
-  browser code.
-- SQLite is the durable source of truth. Process memory must not become the
-  authority for room or game state.
+- `apps/web` is the Next.js App Router client. It owns the mobile interface and
+  mounts A-Frame/AR.js only after hydration and a user camera gesture.
+- `apps/server` is the authoritative Express and Socket.IO process. It owns
+  identity, room transitions, deadlines, encounter leases, accepted hits,
+  cooldowns, scoring, and results.
+- `apps/gateway` is the single-origin HTTP/WebSocket reverse proxy. It sends
+  `/api` and `/socket.io` to Express and all other paths to Next.js.
+- `packages/shared` contains runtime schemas, transport contracts, event names,
+  constants, and marker/ghost manifests. It contains no database authority.
+- SQLite is the durable source of truth. Browser and process-memory state are
+  caches or presentation state only.
 
-The event deployment target is one Node server process with SQLite. A later
-deployment slice will add a single-origin HTTPS gateway for Next.js, `/api`, and
-`/socket.io`; that gateway does not exist in the current foundation slice.
+The event target is one gateway, one Next.js process, one API process, and one
+SQLite database on a single host computer. Multiple independent API instances
+are not supported because database locking and Socket.IO fanout have not been
+designed for that topology.
+
+## Identity and transport
+
+Room creation issues an opaque host credential; joining issues an opaque player
+resume credential. Only hashes are stored. HTTP-only SameSite cookies carry the
+credentials, and every HTTP route and socket action rechecks the caller's room,
+role, and encounter ownership. A room code alone grants no host capability.
+
+The API accepts one exact `PUBLIC_ORIGIN`. The gateway keeps pages, cookies,
+HTTP APIs, and Socket.IO on that origin. Shared Zod schemas validate incoming
+room, marker, encounter, request, and attack identifiers.
+
+## Authoritative state
+
+The persisted room state machine is:
+
+```text
+LOBBY --host start--> RUNNING --server deadline--> AWAITING_FINALIZATION
+AWAITING_FINALIZATION --host end--> FINISHED
+```
+
+Every claim and hit checks the persisted match deadline even if a scheduled
+timer is late. On startup, expired rooms are advanced before requests are
+accepted. The periodic expiration job is only a notification convenience.
+
+Marker and encounter mutations run in `better-sqlite3` transactions. Claims
+atomically check marker availability, the player's one-active-encounter limit,
+and the room deadline. Request IDs and attack IDs are persisted for idempotent
+retries. Defeat, score increment, score audit event, and cooldown creation occur
+in one transaction, so an encounter can award points once only.
 
 ## Database initialization
 
-`openDatabase` performs the following sequence for every connection:
+`openDatabase` creates the parent directory, enables foreign keys, configures a
+five-second busy timeout and WAL mode, and applies ordered migrations inside
+transactions. Applied migrations store SHA-256 checksums; startup fails if an
+applied migration changes or the database contains an unknown future version.
 
-1. Create the parent data directory when needed.
-2. Enable SQLite foreign-key enforcement.
-3. Set a 5-second busy timeout.
-4. Request WAL journal mode.
-5. Apply ordered migrations transactionally.
+The schema includes durable claim idempotency, durable attack idempotency, a
+unique score event per encounter, and a partial unique index limiting each
+player to one active encounter.
 
-Applied migrations store a SHA-256 checksum. Startup fails if an already-applied
-migration was edited or if the database contains a migration version unknown to
-the running code. New schema changes must therefore be added as new migrations.
+## AR and presentation boundary
 
-The initial schema includes `encounter_hits` for durable attack idempotency and
-a partial unique index that limits each player to one `ACTIVE` encounter. The
-encounter status names are internal persistence states; game transition behavior
-will be implemented and tested in the gameplay slices.
+The client maps all 30 marker IDs to explicit `.patt` paths from
+`MARKER_MANIFEST`. Stable visible markers are selected deterministically only
+when no local encounter is active. Detection proposes a claim; it does not
+select the ghost, hit requirement, accepted damage, points, or cooldown.
 
-## Confirmed limitations
+The server chooses a mobile-candidate ghost and hit requirement. Models are
+visual-only and are normalized into marker-relative bounds at runtime. If a GLB
+cannot load, the client renders a lightweight procedural fallback. Tracking
+loss pauses local attacks and prompts reacquisition while the server lease keeps
+running.
 
-Only the foundation slice is present. In particular, there is currently no host
-or player authentication, room API, Socket.IO authorization, gameplay domain
-logic, CORS policy, rate limiting, reverse proxy, AR runtime, or production
-HTTPS/ngrok configuration. The health route is intentionally the only API route.
+## Validation boundary
 
-## Asset manifests
+`npm run validate:assets` verifies manifest completeness, marker pattern
+structure and uniqueness, and GLB structure/integrity. Automated server tests
+exercise authorization, transitions, contention, idempotency, scoring,
+deadlines, cooldowns, and restart persistence. Browser review covers the
+single-origin HTTP/socket flow and camera lifecycle with a test-only media
+device.
 
-`MARKER_MANIFEST` is the one-to-one mapping from the 30 authoritative marker IDs
-to public `.patt` and printable image paths. `GHOST_MODEL_MANIFEST` records stable
-model IDs, integrity hashes, measured geometry data, embedded provenance, and
-explicit review status. Both packages can consume the same definitions without
-letting the browser choose authoritative scoring data.
-
-`npm run validate:assets` verifies the manifests against the files. It is an
-integrity and structure check, not a substitute for printed-marker recognition,
-model scale calibration, rights review, or mobile performance testing.
+Those checks do not prove recognition of printed markers, mobile thermal
+performance, or asset rights. The remaining physical and legal gates are
+documented separately and must be recorded before the event.

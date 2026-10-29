@@ -43,8 +43,8 @@ const io = createSocketServer(
 const matchExpirationJob = new MatchExpirationJob(roomService, roomEvents);
 matchExpirationJob.start();
 
-httpServer.listen(config.apiPort, () => {
-  console.log(`Ghost Hunt API listening on http://localhost:${config.apiPort}`);
+httpServer.listen(config.apiPort, "127.0.0.1", () => {
+  console.log(`Ghost Hunt API listening on http://127.0.0.1:${config.apiPort}`);
 });
 
 let shuttingDown = false;

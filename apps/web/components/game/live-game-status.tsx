@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  GHOST_MODEL_MANIFEST,
   type EncounterSnapshot,
   type MarkerId,
   type RoomState,
@@ -23,7 +22,10 @@ function cameraFailureMessage(error: unknown): string {
     if (error.name === "NotAllowedError") {
       return "Camera access was denied. Allow camera access in your browser settings, then try again.";
     }
-    if (error.name === "NotFoundError" || error.name === "OverconstrainedError") {
+    if (
+      error.name === "NotFoundError" ||
+      error.name === "OverconstrainedError"
+    ) {
       return "No compatible rear camera is available on this device.";
     }
     if (error.name === "NotReadableError" || error.name === "AbortError") {
@@ -34,30 +36,35 @@ function cameraFailureMessage(error: unknown): string {
 }
 
 function scoreForCurrentPlayer(state: RoomState): number {
-  return state.players.find((player) => player.id === state.currentPlayerId)?.score ?? 0;
+  return (
+    state.players.find((player) => player.id === state.currentPlayerId)
+      ?.score ?? 0
+  );
 }
 
 export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
   const router = useRouter();
-  const { roomState, connectionState, connectionError, replaceRoomState } = useRoomChannel(
-    initialState.room.code,
-    initialState,
+  const { roomState, connectionState, connectionError, replaceRoomState } =
+    useRoomChannel(initialState.room.code, initialState);
+  const remainingMs = useMatchCountdown(
+    roomState.room.endsAt,
+    roomState.serverTime,
   );
-  const remainingMs = useMatchCountdown(roomState.room.endsAt, roomState.serverTime);
   const [cameraPhase, setCameraPhase] = useState<CameraPhase>("GATE");
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [cameraKey, setCameraKey] = useState(0);
-  const [runtimeState, setRuntimeState] = useState<"LOADING" | "READY" | "ERROR">(
-    "LOADING",
-  );
+  const [runtimeState, setRuntimeState] = useState<
+    "LOADING" | "READY" | "ERROR"
+  >("LOADING");
   const [visibleMarkers, setVisibleMarkers] = useState<ReadonlySet<MarkerId>>(
     () => new Set(),
   );
-  const [localEncounter, setLocalEncounter] = useState<EncounterSnapshot | null>(
-    initialState.activeEncounter,
-  );
+  const [localEncounter, setLocalEncounter] =
+    useState<EncounterSnapshot | null>(initialState.activeEncounter);
   const [claimPending, setClaimPending] = useState(false);
-  const [lastScannedMarker, setLastScannedMarker] = useState<MarkerId | null>(null);
+  const [lastScannedMarker, setLastScannedMarker] = useState<MarkerId | null>(
+    null,
+  );
   const [hitPending, setHitPending] = useState(false);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [hitSignal, setHitSignal] = useState(0);
@@ -74,15 +81,14 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
     : false;
   const score = scoreForCurrentPlayer(roomState);
   const lastMarkerState = lastScannedMarker
-    ? roomState.markers.find((marker) => marker.markerId === lastScannedMarker) ?? null
+    ? (roomState.markers.find(
+        (marker) => marker.markerId === lastScannedMarker,
+      ) ?? null)
     : null;
   const cooldownRemainingMs = useMatchCountdown(
     lastMarkerState?.cooldownUntil ?? null,
     roomState.serverTime,
   );
-  const modelTitle = activeEncounter
-    ? GHOST_MODEL_MANIFEST.find((model) => model.id === activeEncounter.ghostModelId)?.title
-    : null;
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -93,16 +99,27 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
 
   useEffect(() => {
     if (!activeEncounter) return;
-    const delay = Math.max(0, activeEncounter.leaseExpiresAt - roomState.serverTime);
+    const delay = Math.max(
+      0,
+      activeEncounter.leaseExpiresAt - roomState.serverTime,
+    );
     const timer = window.setTimeout(() => {
       if (defeatingRef.current) return;
       setLocalEncounter(null);
-      getGameSocket().emit("room:sync", (result) => {
-        if (result.ok) replaceRoomState(result.state);
-      });
+      getGameSocket(roomState.room.code, "PLAYER").emit(
+        "room:sync",
+        (result) => {
+          if (result.ok) replaceRoomState(result.state);
+        },
+      );
     }, delay + 100);
     return () => window.clearTimeout(timer);
-  }, [activeEncounter, replaceRoomState, roomState.serverTime]);
+  }, [
+    activeEncounter,
+    replaceRoomState,
+    roomState.room.code,
+    roomState.serverTime,
+  ]);
 
   useEffect(() => {
     if (roomState.room.status === "LOBBY") {
@@ -115,10 +132,16 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
     if (cameraPhase !== "ACTIVE") return;
     const checkCamera = (): void => {
       if (document.visibilityState !== "visible") return;
-      const stream = document.querySelector<HTMLVideoElement>("video[data-ghost-hunt-camera]")?.srcObject;
+      const stream = document.querySelector<HTMLVideoElement>(
+        "video[data-ghost-hunt-camera]",
+      )?.srcObject;
       if (!(stream instanceof MediaStream)) return;
-      if (stream.getVideoTracks().every((track) => track.readyState === "ended")) {
-        setCameraError("The camera stopped while the hunt was interrupted. Resume it to continue.");
+      if (
+        stream.getVideoTracks().every((track) => track.readyState === "ended")
+      ) {
+        setCameraError(
+          "The camera stopped while the hunt was interrupted. Resume it to continue.",
+        );
         setCameraPhase("ERROR");
       }
     };
@@ -139,7 +162,9 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
 
   const startCamera = useCallback(async (): Promise<void> => {
     if (!navigator.mediaDevices?.getUserMedia) {
-      setCameraError("This browser does not provide the camera access required for AR.");
+      setCameraError(
+        "This browser does not provide the camera access required for AR.",
+      );
       setCameraPhase("ERROR");
       return;
     }
@@ -169,7 +194,10 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
       const oscillator = context.createOscillator();
       const gain = context.createGain();
       oscillator.type = defeated ? "triangle" : "sine";
-      oscillator.frequency.setValueAtTime(defeated ? 520 : 220, context.currentTime);
+      oscillator.frequency.setValueAtTime(
+        defeated ? 520 : 220,
+        context.currentTime,
+      );
       oscillator.frequency.exponentialRampToValueAtTime(
         defeated ? 860 : 160,
         context.currentTime + 0.12,
@@ -183,22 +211,26 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
     [soundEnabled],
   );
 
-  const handleMarkerVisibility = useCallback((markerId: MarkerId, visible: boolean) => {
-    setVisibleMarkers((current) => {
-      const next = new Set(current);
-      if (visible) next.add(markerId);
-      else next.delete(markerId);
-      return next;
-    });
-  }, []);
+  const handleMarkerVisibility = useCallback(
+    (markerId: MarkerId, visible: boolean) => {
+      setVisibleMarkers((current) => {
+        const next = new Set(current);
+        if (visible) next.add(markerId);
+        else next.delete(markerId);
+        return next;
+      });
+    },
+    [],
+  );
 
   const handleMarkerStable = useCallback(
     (markerId: MarkerId): void => {
-      if (claimPending || activeEncounter || connectionState !== "CONNECTED") return;
+      if (claimPending || activeEncounter || connectionState !== "CONNECTED")
+        return;
       setLastScannedMarker(markerId);
       setClaimPending(true);
       setActionMessage(`Checking ${markerId}…`);
-      getGameSocket().emit(
+      getGameSocket(roomState.room.code, "PLAYER").emit(
         "marker:claim",
         { markerId, requestId: crypto.randomUUID() },
         (result) => {
@@ -212,7 +244,7 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
         },
       );
     },
-    [activeEncounter, claimPending, connectionState],
+    [activeEncounter, claimPending, connectionState, roomState.room.code],
   );
 
   const handleAttack = useCallback((): void => {
@@ -225,9 +257,12 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
       return;
     }
     setHitPending(true);
-    getGameSocket().emit(
+    getGameSocket(roomState.room.code, "PLAYER").emit(
       "encounter:hit",
-      { encounterId: activeEncounter.encounterId, attackId: crypto.randomUUID() },
+      {
+        encounterId: activeEncounter.encounterId,
+        attackId: crypto.randomUUID(),
+      },
       (result) => {
         setHitPending(false);
         if (!result.ok) {
@@ -238,7 +273,9 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
           defeatingRef.current = true;
           setDefeatSignal((value) => value + 1);
           setLastPoints(result.data.pointsAwarded);
-          setActionMessage(`Ghost defeated. +${result.data.pointsAwarded} points verified.`);
+          setActionMessage(
+            `Ghost defeated. +${result.data.pointsAwarded} points verified.`,
+          );
           playHitTone(true);
           window.setTimeout(() => {
             defeatingRef.current = false;
@@ -254,7 +291,14 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
         setActionMessage(`${result.data.remainingHits} hits remaining.`);
       },
     );
-  }, [activeEncounter, activeMarkerVisible, connectionState, hitPending, playHitTone]);
+  }, [
+    activeEncounter,
+    activeMarkerVisible,
+    connectionState,
+    hitPending,
+    playHitTone,
+    roomState.room.code,
+  ]);
 
   const huntInstruction = useMemo(() => {
     if (connectionState !== "CONNECTED") return "Reconnecting to the hunt…";
@@ -273,7 +317,10 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
     ) {
       return `${lastMarkerState.markerId} recovering — ${Math.ceil(cooldownRemainingMs / 1_000)}s`;
     }
-    if (lastMarkerState?.status === "RESERVED" && !lastMarkerState.reservedByCurrentPlayer) {
+    if (
+      lastMarkerState?.status === "RESERVED" &&
+      !lastMarkerState.reservedByCurrentPlayer
+    ) {
       return "Ghost being hunted by another player.";
     }
     return actionMessage ?? "Hold a printed marker steady in the frame.";
@@ -291,9 +338,15 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
   if (roomState.room.status === "AWAITING_FINALIZATION") {
     return (
       <main className="grid min-h-dvh place-content-center px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2rem,env(safe-area-inset-top))] text-center">
-        <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-[#ffb36b]">00:00</p>
-        <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">Time is up.</h1>
-        <p className="mt-4 text-lg text-[#aaa2b7]">Waiting for the host to publish the final standings.</p>
+        <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-[#ffb36b]">
+          00:00
+        </p>
+        <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">
+          Time is up.
+        </h1>
+        <p className="mt-4 text-lg text-[#aaa2b7]">
+          Waiting for the host to publish the final standings.
+        </p>
       </main>
     );
   }
@@ -312,7 +365,8 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
             Put a ghost in the room.
           </h1>
           <p className="mt-6 max-w-lg text-lg leading-8 text-[#d4ccdc]">
-            Enter the hunt to grant camera access. Point the rear camera at one printed marker and keep it visible while you attack.
+            Enter the hunt to grant camera access. Point the rear camera at one
+            printed marker and keep it visible while you attack.
           </p>
           {cameraError ? (
             <p role="alert" className="mt-6 max-w-lg text-[#ffb36b]">
@@ -325,10 +379,15 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
             disabled={cameraPhase === "STARTING"}
             className="mt-8 min-h-14 rounded-xl bg-[#ff7a1a] px-7 font-extrabold text-[#120b06] transition-colors hover:bg-[#ff9144] disabled:cursor-wait disabled:bg-[#5b351d] disabled:text-[#aaa2b7]"
           >
-            {cameraPhase === "STARTING" ? "Requesting camera…" : cameraPhase === "ERROR" ? "Try camera again" : "Enter hunt"}
+            {cameraPhase === "STARTING"
+              ? "Requesting camera…"
+              : cameraPhase === "ERROR"
+                ? "Try camera again"
+                : "Enter hunt"}
           </button>
           <p className="mt-5 max-w-md text-sm leading-6 text-[#aaa2b7]">
-            Camera access requires HTTPS or localhost. The camera cannot remain active while your browser is backgrounded or your phone is locked.
+            Camera access requires HTTPS or localhost. The camera cannot remain
+            active while your browser is backgrounded or your phone is locked.
           </p>
         </section>
       </main>
@@ -342,14 +401,18 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
         activeEncounter={activeEncounter}
         hitSignal={hitSignal}
         defeatSignal={defeatSignal}
-        disabled={hitPending || !activeMarkerVisible || connectionState !== "CONNECTED"}
+        disabled={
+          hitPending || !activeMarkerVisible || connectionState !== "CONNECTED"
+        }
         onMarkerStable={handleMarkerStable}
         onMarkerVisibility={handleMarkerVisibility}
         onAttack={handleAttack}
         onRuntimeState={(state) => {
           setRuntimeState(state);
           if (state === "ERROR") {
-            setCameraError("The AR runtime could not start. Check the camera permission and try again.");
+            setCameraError(
+              "The AR runtime could not start. Check the camera permission and try again.",
+            );
             setCameraPhase("ERROR");
           }
         }}
@@ -358,14 +421,20 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-[#09070f]/95 via-[#09070f]/62 to-transparent pb-14 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="flex items-start justify-between gap-4 px-4 sm:px-6">
           <div>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#d4ccdc]">Time</p>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#d4ccdc]">
+              Time
+            </p>
             <time className="font-mono text-2xl font-black tabular-nums tracking-[0.06em]">
               {formatMatchTime(remainingMs)}
             </time>
           </div>
           <div className="text-right">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#d4ccdc]">Score</p>
-            <p className="font-mono text-2xl font-black tabular-nums text-[#7df9e7]">{score}</p>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#d4ccdc]">
+              Score
+            </p>
+            <p className="font-mono text-2xl font-black tabular-nums text-[#7df9e7]">
+              {score}
+            </p>
           </div>
         </div>
       </div>
@@ -374,10 +443,12 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
         <div className="pointer-events-auto mx-auto max-w-lg">
           <div className="mb-3 flex items-end justify-between gap-3">
             <div>
-              <p role="status" className="max-w-sm font-bold text-[#f6f0e6]">{huntInstruction}</p>
+              <p role="status" className="max-w-sm font-bold text-[#f6f0e6]">
+                {huntInstruction}
+              </p>
               {activeEncounter ? (
                 <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b9a4ff]">
-                  {modelTitle ?? activeEncounter.ghostModelId} · {activeEncounter.markerId}
+                  Ghost · {activeEncounter.markerId}
                 </p>
               ) : lastPoints ? (
                 <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#7df9e7]">
@@ -385,7 +456,9 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
                 </p>
               ) : null}
             </div>
-            <span className={`font-mono text-[10px] font-bold uppercase tracking-[0.14em] ${connectionState === "CONNECTED" ? "text-[#7df9e7]" : "text-[#ffb36b]"}`}>
+            <span
+              className={`font-mono text-[10px] font-bold uppercase tracking-[0.14em] ${connectionState === "CONNECTED" ? "text-[#7df9e7]" : "text-[#ffb36b]"}`}
+            >
               {connectionState === "CONNECTED" ? "Live" : "Offline"}
             </span>
           </div>
@@ -394,10 +467,18 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
             <button
               type="button"
               onClick={handleAttack}
-              disabled={!activeMarkerVisible || hitPending || connectionState !== "CONNECTED"}
+              disabled={
+                !activeMarkerVisible ||
+                hitPending ||
+                connectionState !== "CONNECTED"
+              }
               className="min-h-14 w-full rounded-xl bg-[#ff7a1a] px-6 text-lg font-black text-[#120b06] transition-colors hover:bg-[#ff9144] disabled:cursor-not-allowed disabled:bg-[#5b351d] disabled:text-[#aaa2b7]"
             >
-              {hitPending ? "Verifying hit…" : activeMarkerVisible ? "Attack ghost" : "Marker out of view"}
+              {hitPending
+                ? "Verifying hit…"
+                : activeMarkerVisible
+                  ? "Attack ghost"
+                  : "Marker out of view"}
             </button>
           ) : null}
 
@@ -421,7 +502,9 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
 
           {helpOpen ? (
             <div className="mt-3 rounded-xl bg-[#12101b] p-4 text-sm leading-6 text-[#d4ccdc] shadow-[0_14px_40px_rgba(0,0,0,0.42)]">
-              Keep the full black border of one marker in view. If tracking is lost, move slowly back to the same marker. If the camera stops after switching apps or locking the phone, resume it below.
+              Keep the full black border of one marker in view. If tracking is
+              lost, move slowly back to the same marker. If the camera stops
+              after switching apps or locking the phone, resume it below.
               <button
                 type="button"
                 onClick={() => {
@@ -434,7 +517,9 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
               </button>
             </div>
           ) : null}
-          {connectionError ? <p className="mt-3 text-sm text-[#ffb36b]">{connectionError}</p> : null}
+          {connectionError ? (
+            <p className="mt-3 text-sm text-[#ffb36b]">{connectionError}</p>
+          ) : null}
         </div>
       </div>
     </main>

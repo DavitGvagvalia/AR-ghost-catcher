@@ -32,6 +32,7 @@ export function createApp(
   const roomEvents = options.roomEvents ?? new RoomEvents();
 
   app.disable("x-powered-by");
+  app.set("trust proxy", 1);
   app.use(helmet());
   app.use(cors({ origin: publicOrigin, credentials: true }));
   app.use((request, _response, next) => {

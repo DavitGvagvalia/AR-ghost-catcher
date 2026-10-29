@@ -151,7 +151,7 @@ test("the authoritative deadline cancels encounters and finalization is idempote
         roomId,
         "marker-01",
         playerId,
-        "review-ghost",
+        "animal-company-ghost",
         3,
         now,
         now + 60_000,
@@ -168,17 +168,23 @@ test("the authoritative deadline cancels encounters and finalization is idempote
     `${runtime.baseUrl}/api/rooms/${code}/state`,
     { headers: { Cookie: playerCookie } },
   );
-  const expired = (await deadlineState.json()) as { state: JoinRoomResponse["state"] };
+  const expired = (await deadlineState.json()) as {
+    state: JoinRoomResponse["state"];
+  };
   assert.equal(expired.state.room.status, "AWAITING_FINALIZATION");
   assert.deepEqual(
     runtime.database
-      .prepare("SELECT status, completed_at AS completedAt FROM encounters WHERE id = ?")
+      .prepare(
+        "SELECT status, completed_at AS completedAt FROM encounters WHERE id = ?",
+      )
       .get("encounter-deadline"),
     { status: "CANCELLED", completedAt: now },
   );
   assert.equal(
     runtime.database
-      .prepare("SELECT active_encounter_id FROM markers WHERE room_id = ? AND marker_id = ?")
+      .prepare(
+        "SELECT active_encounter_id FROM markers WHERE room_id = ? AND marker_id = ?",
+      )
       .pluck()
       .get(roomId, "marker-01"),
     null,
@@ -200,7 +206,10 @@ test("the authoritative deadline cancels encounters and finalization is idempote
   );
   const unchanged = (await duplicateEnd.json()) as RoomTransitionResponse;
   assert.equal(duplicateEnd.status, 200);
-  assert.equal(unchanged.state.room.finalizedAt, finished.state.room.finalizedAt);
+  assert.equal(
+    unchanged.state.room.finalizedAt,
+    finished.state.room.finalizedAt,
+  );
 });
 
 test("startup recovery advances every persisted overdue match", async (t) => {
@@ -229,7 +238,9 @@ test("startup recovery advances every persisted overdue match", async (t) => {
   assert.equal(expiredIds.length, 2);
   assert.equal(
     runtime.database
-      .prepare("SELECT COUNT(*) FROM rooms WHERE status = 'AWAITING_FINALIZATION'")
+      .prepare(
+        "SELECT COUNT(*) FROM rooms WHERE status = 'AWAITING_FINALIZATION'",
+      )
       .pluck()
       .get(),
     2,
@@ -274,10 +285,9 @@ test("final results expose co-winners with deterministic tied ordering", async (
     )
     .run(123_456, code);
 
-  const response = await fetch(
-    `${runtime.baseUrl}/api/rooms/${code}/results`,
-    { headers: { Cookie: playerCookie } },
-  );
+  const response = await fetch(`${runtime.baseUrl}/api/rooms/${code}/results`, {
+    headers: { Cookie: playerCookie },
+  });
   const body = (await response.json()) as ResultsResponse;
   assert.equal(response.status, 200);
   assert.equal(body.results.finalizedAt, 123_456);

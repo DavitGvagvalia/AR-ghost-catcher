@@ -13,6 +13,7 @@
 
 # testing
 /coverage
+/tmp/
 
 # next.js
 **/.next/
@@ -35,6 +36,7 @@ yarn-error.log*
 # env files (the placeholder is intentionally committed)
 .env*
 !.env.example
+.venv-markers/
 
 # local SQLite state
 apps/server/data/

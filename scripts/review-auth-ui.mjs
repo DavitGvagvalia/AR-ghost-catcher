@@ -1,4 +1,4 @@
-/* global console, document, process */
+/* global console, document, getComputedStyle, MediaStream, process */
 
 import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -16,25 +16,31 @@ await mkdir(outputDirectory, { recursive: true });
 const browser = await chromium.launch({
   executablePath: chromePath,
   headless: true,
-  args: ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"],
+  args: [
+    "--use-fake-device-for-media-stream",
+    "--use-fake-ui-for-media-stream",
+  ],
 });
 
 async function assertNoHorizontalOverflow(page, label) {
   const overflow = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,
-    roots: [document.documentElement, document.body, document.querySelector("main")].map(
-      (element) =>
-        element
-          ? {
-              tag: element.tagName,
-              style: element.getAttribute("style"),
-              computedWidth: getComputedStyle(element).width,
-              transform: getComputedStyle(element).transform,
-              position: getComputedStyle(element).position,
-              marginLeft: getComputedStyle(element).marginLeft,
-            }
-          : null,
+    roots: [
+      document.documentElement,
+      document.body,
+      document.querySelector("main"),
+    ].map((element) =>
+      element
+        ? {
+            tag: element.tagName,
+            style: element.getAttribute("style"),
+            computedWidth: getComputedStyle(element).width,
+            transform: getComputedStyle(element).transform,
+            position: getComputedStyle(element).position,
+            marginLeft: getComputedStyle(element).marginLeft,
+          }
+        : null,
     ),
     offenders: [...document.querySelectorAll("body *")]
       .map((element) => {
@@ -48,7 +54,9 @@ async function assertNoHorizontalOverflow(page, label) {
           width: Math.round(rect.width),
         };
       })
-      .filter((element) => element.right > document.documentElement.clientWidth + 1)
+      .filter(
+        (element) => element.right > document.documentElement.clientWidth + 1,
+      )
       .slice(0, 8),
   }));
   if (overflow.scrollWidth > overflow.clientWidth) {
@@ -60,25 +68,52 @@ async function assertNoHorizontalOverflow(page, label) {
 
 async function waitForAuthoredMotion(page) {
   await page.locator(".room-signal").evaluate(async (element) => {
-    await Promise.all(element.getAnimations().map((animation) => animation.finished));
+    await Promise.all(
+      element.getAnimations().map((animation) => animation.finished),
+    );
   });
 }
 
 try {
-  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const mobile = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
   const login = await mobile.newPage();
-  await login.goto(`${baseUrl}/login`, { waitUntil: "networkidle" });
+  const loginResponse = await login.goto(`${baseUrl}/login`, {
+    waitUntil: "networkidle",
+  });
+  if (!loginResponse) throw new Error("Login navigation returned no response.");
+  const securityHeaders = loginResponse.headers();
+  if (securityHeaders["x-content-type-options"] !== "nosniff") {
+    throw new Error(
+      "Login response is missing X-Content-Type-Options: nosniff.",
+    );
+  }
+  if (securityHeaders["x-frame-options"] !== "DENY") {
+    throw new Error("Login response is missing X-Frame-Options: DENY.");
+  }
+  if (!securityHeaders["permissions-policy"]?.includes("camera=(self)")) {
+    throw new Error(
+      "Login response Permissions-Policy does not allow same-origin camera access.",
+    );
+  }
   await assertNoHorizontalOverflow(login, "Mobile login");
   await login.screenshot({ path: resolve(outputDirectory, "mobile.png") });
 
-  const hostContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const hostContext = await browser.newContext({
+    viewport: { width: 1440, height: 1000 },
+  });
   const host = await hostContext.newPage();
+  const hostPageErrors = [];
+  host.on("pageerror", (error) => hostPageErrors.push(error.message));
   await host.goto(`${baseUrl}/host`, { waitUntil: "networkidle" });
   await host.getByRole("button", { name: "Create room" }).click();
   const roomCode = (await host.getByTestId("room-code").textContent())?.trim();
   if (!roomCode) throw new Error("Host flow did not return a room code.");
 
-  const playerContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const playerContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
   const player = await playerContext.newPage();
   const playerPageErrors = [];
   player.on("pageerror", (error) => playerPageErrors.push(error.message));
@@ -90,21 +125,33 @@ try {
   await player.getByText("Review Hunter").waitFor();
   await waitForAuthoredMotion(player);
   await assertNoHorizontalOverflow(player, "Mobile lobby");
-  await player.screenshot({ path: resolve(outputDirectory, "mobile-lobby.png"), fullPage: true });
+  await player.screenshot({
+    path: resolve(outputDirectory, "mobile-lobby.png"),
+    fullPage: true,
+  });
 
-  await host.getByText("Review Hunter").waitFor();
+  await host.getByText("Review Hunter").first().waitFor();
   await waitForAuthoredMotion(host);
   await assertNoHorizontalOverflow(host, "Desktop host room");
-  await host.screenshot({ path: resolve(outputDirectory, "desktop.png"), fullPage: true });
+  await host.screenshot({
+    path: resolve(outputDirectory, "desktop.png"),
+    fullPage: true,
+  });
 
   await host.getByRole("button", { name: "Start hunt" }).click();
   await host.getByText("Hunt in progress").waitFor();
   await player.waitForURL(/\/game/);
-  await player.getByRole("heading", { name: "Put a ghost in the room." }).waitFor();
+  await player
+    .getByRole("heading", { name: "Put a ghost in the room." })
+    .waitFor();
   await assertNoHorizontalOverflow(player, "Mobile running match");
-  await player.screenshot({ path: resolve(outputDirectory, "mobile-game-gate.png") });
+  await player.screenshot({
+    path: resolve(outputDirectory, "mobile-game-gate.png"),
+  });
   await player.getByRole("button", { name: "Enter hunt" }).click();
-  await player.getByText("Hold a printed marker steady in the frame.").waitFor({ timeout: 15_000 });
+  await player
+    .getByText("Hold a printed marker steady in the frame.")
+    .waitFor({ timeout: 15_000 });
   const cameraState = await player.evaluate(() => {
     return [...document.querySelectorAll("video")].map((video) => {
       const stream = video.srcObject;
@@ -122,21 +169,87 @@ try {
     });
   });
   if (!cameraState.some((video) => video.tracks.includes("live"))) {
-    throw new Error(`AR camera did not expose a live video track: ${JSON.stringify(cameraState)}`);
+    throw new Error(
+      `AR camera did not expose a live video track: ${JSON.stringify(cameraState)}`,
+    );
   }
-  if (!cameraState.some((video) => video.ownedByHunt && video.tracks.includes("live"))) {
-    throw new Error("AR camera readiness was reported before the hunt owned a live stream.");
+  if (
+    !cameraState.some(
+      (video) => video.ownedByHunt && video.tracks.includes("live"),
+    )
+  ) {
+    throw new Error(
+      "AR camera readiness was reported before the hunt owned a live stream.",
+    );
   }
   await player.waitForTimeout(750);
   if (playerPageErrors.length > 0) {
-    throw new Error(`Player page reported runtime errors: ${playerPageErrors.join(" | ")}`);
+    throw new Error(
+      `Player page reported runtime errors: ${playerPageErrors.join(" | ")}`,
+    );
   }
   await assertNoHorizontalOverflow(player, "Mobile AR view");
-  await player.screenshot({ path: resolve(outputDirectory, "mobile-game.png") });
-  await host.screenshot({ path: resolve(outputDirectory, "desktop-host-running.png") });
+  await player.screenshot({
+    path: resolve(outputDirectory, "mobile-game.png"),
+  });
+  await host.screenshot({
+    path: resolve(outputDirectory, "desktop-host-running.png"),
+  });
 
-  console.log(`Reviewed room ${roomCode}: host create, player join, live roster, and synchronized start passed.`);
-  await Promise.all([mobile.close(), hostContext.close(), playerContext.close()]);
+  const mobileHostContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    storageState: await hostContext.storageState(),
+  });
+  const mobileHost = await mobileHostContext.newPage();
+  mobileHost.on("pageerror", (error) => hostPageErrors.push(error.message));
+  await mobileHost.goto(`${baseUrl}/host`, { waitUntil: "networkidle" });
+  await mobileHost.getByText("Hunt in progress").waitFor();
+  await assertNoHorizontalOverflow(mobileHost, "Mobile host room");
+  await mobileHost.screenshot({
+    path: resolve(outputDirectory, "mobile-host-running.png"),
+  });
+  await mobileHost
+    .locator('section[aria-labelledby="live-ledger-title"]')
+    .scrollIntoViewIfNeeded();
+  await mobileHost.screenshot({
+    path: resolve(outputDirectory, "mobile-host-ledger.png"),
+  });
+
+  const markerTestErrors = [];
+  login.on("pageerror", (error) => markerTestErrors.push(error.message));
+  await login.goto(`${baseUrl}/marker-test`, { waitUntil: "networkidle" });
+  await login.getByRole("heading", { name: "Verify every marker." }).waitFor();
+  await assertNoHorizontalOverflow(login, "Mobile marker-test gate");
+  await login.screenshot({
+    path: resolve(outputDirectory, "mobile-marker-test-gate.png"),
+  });
+  await login.getByRole("button", { name: "Start marker test" }).click();
+  await login.getByText("Camera ready").waitFor({ timeout: 15_000 });
+  if (markerTestErrors.length > 0) {
+    throw new Error(
+      `Marker-test page reported runtime errors: ${markerTestErrors.join(" | ")}`,
+    );
+  }
+  await assertNoHorizontalOverflow(login, "Mobile marker-test camera");
+  await login.screenshot({
+    path: resolve(outputDirectory, "mobile-marker-test.png"),
+  });
+
+  if (hostPageErrors.length > 0) {
+    throw new Error(
+      `Host page reported runtime errors: ${hostPageErrors.join(" | ")}`,
+    );
+  }
+
+  console.log(
+    `Reviewed room ${roomCode}: host create, player join, live roster, synchronized start, camera, and marker-test runtime passed.`,
+  );
+  await Promise.all([
+    mobile.close(),
+    hostContext.close(),
+    mobileHostContext.close(),
+    playerContext.close(),
+  ]);
 } finally {
   await browser.close();
 }

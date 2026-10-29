@@ -161,6 +161,13 @@ test("ghost manifest matches self-contained GLB v2 assets and embedded provenanc
     assert.equal(model.mobileReadiness, expectedReadiness);
     assert.equal(model.displayScale, null);
     assert.equal(model.rightsReviewStatus, "NOT_REVIEWED");
+    if (model.mobileReadiness === "REQUIRES_OPTIMIZATION") {
+      assert.equal(
+        model.serverSelectable,
+        false,
+        `${model.id} server selection`,
+      );
+    }
     assert.equal(glb.provenance?.author, model.provenance.author);
     assert.equal(glb.provenance?.source, model.provenance.sourceUrl);
     assert.equal(
@@ -168,4 +175,22 @@ test("ghost manifest matches self-contained GLB v2 assets and embedded provenanc
       "SKETCHFAB Standard (https://sketchfab.com/licenses)",
     );
   }
+
+  const selectableModels = GHOST_MODEL_MANIFEST.filter(
+    (model) => model.serverSelectable,
+  );
+  assert.ok(
+    selectableModels.length >= 3,
+    "at least three models remain selectable",
+  );
+  assert.ok(
+    selectableModels.every((model) => model.mobileReadiness === "CANDIDATE"),
+    "all selectable models satisfy the mobile asset budget",
+  );
+  assert.equal(
+    GHOST_MODEL_MANIFEST.find((model) => model.id === "big-boo")
+      ?.serverSelectable,
+    false,
+    "the third-party character reference is excluded pending rights review",
+  );
 });

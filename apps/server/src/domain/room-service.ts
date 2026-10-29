@@ -1,6 +1,7 @@
 import {
   MARKER_IDS,
   MATCH_DURATION_MS,
+  compareStableText,
   type RoomState,
   type FinalResults,
 } from "@ghost-hunt/shared";
@@ -192,38 +193,6 @@ export class RoomService {
     );
   }
 
-  authenticateSession(tokens: SessionTokens): AuthenticatedSession {
-    if (tokens.hostToken) {
-      const room = this.#rooms.findRoomByHostTokenHash(
-        hashToken(tokens.hostToken),
-      );
-      if (room) {
-        return {
-          role: "HOST",
-          roomId: room.id,
-          roomCode: room.code,
-          playerId: null,
-        };
-      }
-    }
-
-    if (tokens.playerToken) {
-      const player = this.#rooms.findPlayerByResumeTokenHash(
-        hashToken(tokens.playerToken),
-      );
-      if (player) {
-        const room = this.#rooms.findRoomById(player.roomId);
-        if (room) return this.playerSession(room, player);
-      }
-    }
-
-    throw new AppError(
-      401,
-      "ROOM_SESSION_REQUIRED",
-      "Join or create a room before connecting.",
-    );
-  }
-
   getState(session: AuthenticatedSession): RoomState {
     this.#rooms.expireMatchIfDue(session.roomId, this.#now());
     const room = this.#rooms.findRoomById(session.roomId);
@@ -349,12 +318,14 @@ export class RoomService {
       );
     }
 
-    const players = this.#rooms.listPlayers(room.id).sort(
-      (left, right) =>
-        right.score - left.score ||
-        left.nickname.localeCompare(right.nickname) ||
-        left.id.localeCompare(right.id),
-    );
+    const players = this.#rooms
+      .listPlayers(room.id)
+      .sort(
+        (left, right) =>
+          right.score - left.score ||
+          compareStableText(left.nickname, right.nickname) ||
+          compareStableText(left.id, right.id),
+      );
     const topScore = players[0]?.score ?? 0;
     const winners = players
       .filter((player) => player.score === topScore)

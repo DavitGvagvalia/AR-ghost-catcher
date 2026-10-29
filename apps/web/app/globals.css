@@ -16,11 +16,14 @@
 @theme inline {
   --color-background: var(--night);
   --color-foreground: var(--ink);
-  --font-sans: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:
+    "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 html {
   min-width: 320px;
@@ -32,19 +35,42 @@ body {
   min-height: 100dvh;
   margin: 0 !important;
   background:
-    radial-gradient(circle at 82% 4%, rgb(67 42 107 / 32%), transparent 28rem),
-    radial-gradient(circle at 10% 90%, rgb(23 104 104 / 16%), transparent 24rem),
+    radial-gradient(
+      circle at 82% 4%,
+      rgb(185 164 255 / 14%),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 10% 90%,
+      rgb(23 104 104 / 16%),
+      transparent 24rem
+    ),
     var(--night);
   color: var(--ink);
-  font-family: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  font-family:
+    "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
-button, input { font: inherit; }
-button, a { -webkit-tap-highlight-color: transparent; }
-::selection { background: rgb(255 122 26 / 38%); color: #fff; }
-:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
-input::placeholder { color: #9b94a7; }
+button,
+input {
+  font: inherit;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+::selection {
+  background: rgb(255 122 26 / 38%);
+  color: #fff;
+}
+:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+}
+input::placeholder {
+  color: var(--muted);
+}
 
 #arjs-video[data-ghost-hunt-camera="true"] {
   position: absolute !important;
@@ -58,8 +84,14 @@ input::placeholder { color: #9b94a7; }
 }
 
 @keyframes room-signal {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .room-signal {
@@ -67,7 +99,9 @@ input::placeholder { color: #9b94a7; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

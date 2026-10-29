@@ -8,11 +8,12 @@ type ConnectionState = "CONNECTING" | "CONNECTED" | "DISCONNECTED";
 
 export function useRoomChannel(roomCode: string, initialState: RoomState) {
   const [roomState, setRoomState] = useState(initialState);
-  const [connectionState, setConnectionState] = useState<ConnectionState>("CONNECTING");
+  const [connectionState, setConnectionState] =
+    useState<ConnectionState>("CONNECTING");
   const [connectionError, setConnectionError] = useState<string | null>(null);
 
   useEffect(() => {
-    const socket = getGameSocket();
+    const socket = getGameSocket(roomCode, initialState.role);
     function subscribe() {
       setConnectionState("CONNECTED");
       setConnectionError(null);
@@ -21,7 +22,9 @@ export function useRoomChannel(roomCode: string, initialState: RoomState) {
         else setConnectionError(result.error.message);
       });
     }
-    function disconnect() { setConnectionState("DISCONNECTED"); }
+    function disconnect() {
+      setConnectionState("DISCONNECTED");
+    }
     function connectError() {
       setConnectionState("DISCONNECTED");
       setConnectionError("Live updates are reconnecting…");
@@ -31,7 +34,8 @@ export function useRoomChannel(roomCode: string, initialState: RoomState) {
     socket.on("disconnect", disconnect);
     socket.on("connect_error", connectError);
     socket.on("room:state", setRoomState);
-    if (socket.connected) subscribe(); else socket.connect();
+    if (socket.connected) subscribe();
+    else socket.connect();
     const syncTimer = window.setInterval(() => {
       if (!socket.connected) return;
       socket.emit("room:sync", (result) => {
@@ -47,7 +51,7 @@ export function useRoomChannel(roomCode: string, initialState: RoomState) {
       socket.off("room:state", setRoomState);
       socket.disconnect();
     };
-  }, [roomCode]);
+  }, [initialState.role, roomCode]);
 
   return {
     roomState,

@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "build": "next build --webpack",
-    "dev": "next dev --port ${WEB_PORT:-3000}",
+    "dev": "node ../../scripts/run-next.mjs dev",
     "lint": "eslint .",
     "prebuild": "npm run build -w @ghost-hunt/shared",
     "predev": "npm run build -w @ghost-hunt/shared",
     "pretypecheck": "npm run build -w @ghost-hunt/shared",
-    "start": "next start --port ${WEB_PORT:-3000}",
+    "start": "node ../../scripts/run-next.mjs start",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {

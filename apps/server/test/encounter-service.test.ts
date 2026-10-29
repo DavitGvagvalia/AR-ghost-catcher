@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 
 import type { CreateRoomResponse, JoinRoomResponse } from "@ghost-hunt/shared";
@@ -13,6 +16,8 @@ import {
   createTestRuntime,
 } from "./helpers/runtime.js";
 import type { AuthenticatedSession } from "../src/domain/room-service.js";
+import { EncounterService } from "../src/domain/encounter-service.js";
+import { openDatabase } from "../src/db/connection.js";
 
 function tokenFromCookie(cookie: string): string {
   const value = cookie.split("=", 2)[1];
@@ -86,22 +91,15 @@ test("marker claims are atomic, room-isolated, and one-per-player", async (t) =>
   assert.equal(first.ghostModelId, "animal-company-ghost");
 
   assert.throws(
-    () =>
-      runtime.encounterService.claim(
-        playerTwo,
-        "marker-01",
-        "request-two",
-      ),
+    () => runtime.encounterService.claim(playerTwo, "marker-01", "request-two"),
     (error: unknown) =>
-      error instanceof Error && "code" in error && error.code === "MARKER_RESERVED",
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "MARKER_RESERVED",
   );
   assert.throws(
     () =>
-      runtime.encounterService.claim(
-        playerOne,
-        "marker-02",
-        "request-three",
-      ),
+      runtime.encounterService.claim(playerOne, "marker-02", "request-three"),
     (error: unknown) =>
       error instanceof Error &&
       "code" in error &&
@@ -155,10 +153,9 @@ test("hits are owned, rate-limited, idempotent, and award once", async (t) => {
     playerId: string;
   }[] = [];
   for (const nickname of ["Owner", "Rival"]) {
-    const response = await post(
-      `${runtime.baseUrl}/api/rooms/${code}/join`,
-      { nickname },
-    );
+    const response = await post(`${runtime.baseUrl}/api/rooms/${code}/join`, {
+      nickname,
+    });
     const joined = (await response.json()) as JoinRoomResponse;
     const cookie = cookieFrom(response, PLAYER_SESSION_COOKIE);
     sessions.push({
@@ -211,15 +208,13 @@ test("hits are owned, rate-limited, idempotent, and award once", async (t) => {
         "attack-too-fast",
       ),
     (error: unknown) =>
-      error instanceof Error && "code" in error && error.code === "HIT_TOO_FAST",
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "HIT_TOO_FAST",
   );
 
   now += 120;
-  runtime.encounterService.hit(
-    owner.session,
-    claim.encounterId,
-    "attack-2",
-  );
+  runtime.encounterService.hit(owner.session, claim.encounterId, "attack-2");
   now += 120;
   const defeated = runtime.encounterService.hit(
     owner.session,
@@ -256,7 +251,9 @@ test("hits are owned, rate-limited, idempotent, and award once", async (t) => {
         "during-cooldown",
       ),
     (error: unknown) =>
-      error instanceof Error && "code" in error && error.code === "MARKER_COOLDOWN",
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "MARKER_COOLDOWN",
   );
   now = defeated.cooldownUntil;
   const afterCooldown = runtime.encounterService.claim(
@@ -303,7 +300,8 @@ test("abandon, disconnect, lease expiry, and deadline release without points", a
   );
   runtime.encounterService.abandon(session, abandoned.encounterId);
   assert.equal(
-    runtime.encounterService.getRoomSnapshot(session.roomId, session.playerId)
+    runtime.encounterService
+      .getRoomSnapshot(session.roomId, session.playerId)
       .markers.find((marker) => marker.markerId === "marker-04")?.status,
     "AVAILABLE",
   );
@@ -320,7 +318,8 @@ test("abandon, disconnect, lease expiry, and deadline release without points", a
   );
   assert.equal(afterLease.activeEncounter, null);
   assert.equal(
-    afterLease.markers.find((marker) => marker.markerId === "marker-05")?.status,
+    afterLease.markers.find((marker) => marker.markerId === "marker-05")
+      ?.status,
     "AVAILABLE",
   );
 
@@ -353,5 +352,122 @@ test("abandon, disconnect, lease expiry, and deadline release without points", a
       .pluck()
       .get(deadlineClaim.encounterId),
     "CANCELLED",
+  );
+});
+
+test("closing and reopening SQLite restores active hits, reservations, scores, and cooldowns", async (t) => {
+  let now = 70_000;
+  const temporaryDirectory = await mkdtemp(
+    join(tmpdir(), "ghost-hunt-restart-"),
+  );
+  const databasePath = join(temporaryDirectory, "game.sqlite");
+  const encounterOptions = {
+    now: () => now,
+    encounterLeaseMs: 60_000,
+    markerCooldownMs: 30_000,
+    minGhostHits: 3,
+    maxGhostHits: 3,
+    minHitIntervalMs: 0,
+    randomIndex: () => 0,
+  };
+  const runtime = await createTestRuntime(
+    false,
+    { now: () => now, matchDurationMs: 120_000 },
+    encounterOptions,
+    {},
+    databasePath,
+  );
+  let runtimeOpen = true;
+  let reopenedDatabase: ReturnType<typeof openDatabase> | null = null;
+  t.after(async () => {
+    if (runtimeOpen) await runtime.close();
+    reopenedDatabase?.close();
+    await rm(temporaryDirectory, { recursive: true, force: true });
+  });
+
+  const createdResponse = await post(`${runtime.baseUrl}/api/rooms`);
+  const created = (await createdResponse.json()) as CreateRoomResponse;
+  const code = created.state.room.code;
+  const hostCookie = cookieFrom(createdResponse, HOST_SESSION_COOKIE);
+  const joinedResponse = await post(
+    `${runtime.baseUrl}/api/rooms/${code}/join`,
+    { nickname: "Restart" },
+  );
+  const playerCookie = cookieFrom(joinedResponse, PLAYER_SESSION_COOKIE);
+  const session = runtime.roomService.authenticateForRoom(code, {
+    playerToken: tokenFromCookie(playerCookie),
+  });
+  await post(`${runtime.baseUrl}/api/rooms/${code}/start`, {}, hostCookie);
+
+  const claim = runtime.encounterService.claim(
+    session,
+    "marker-07",
+    "restart-claim",
+  );
+  runtime.encounterService.hit(session, claim.encounterId, "restart-hit-01");
+
+  await runtime.close();
+  runtimeOpen = false;
+
+  reopenedDatabase = openDatabase({ path: databasePath });
+  const restarted = new EncounterService(reopenedDatabase, encounterOptions);
+  assert.deepEqual(
+    reopenedDatabase
+      .prepare(
+        "SELECT status, started_at AS startedAt, ends_at AS endsAt FROM rooms WHERE id = ?",
+      )
+      .get(session.roomId),
+    { status: "RUNNING", startedAt: 70_000, endsAt: 190_000 },
+  );
+  const restored = restarted.getRoomSnapshot(session.roomId, session.playerId);
+  assert.equal(restored.activeEncounter?.encounterId, claim.encounterId);
+  assert.equal(restored.activeEncounter?.registeredHits, 1);
+  assert.equal(
+    restored.markers.find((marker) => marker.markerId === "marker-07")?.status,
+    "RESERVED",
+  );
+
+  now += 1;
+  restarted.hit(session, claim.encounterId, "restart-hit-02");
+  now += 1;
+  const defeated = restarted.hit(session, claim.encounterId, "restart-hit-03");
+  assert.ok("pointsAwarded" in defeated);
+  if (!("pointsAwarded" in defeated)) return;
+  assert.equal(defeated.pointsAwarded, 3);
+
+  reopenedDatabase.close();
+  reopenedDatabase = openDatabase({ path: databasePath });
+  const restartedAgain = new EncounterService(
+    reopenedDatabase,
+    encounterOptions,
+  );
+  const duringCooldown = restartedAgain.getRoomSnapshot(
+    session.roomId,
+    session.playerId,
+  );
+  assert.equal(duringCooldown.activeEncounter, null);
+  assert.equal(
+    duringCooldown.markers.find((marker) => marker.markerId === "marker-07")
+      ?.cooldownUntil,
+    defeated.cooldownUntil,
+  );
+  assert.equal(
+    reopenedDatabase
+      .prepare("SELECT score FROM players WHERE id = ?")
+      .pluck()
+      .get(session.playerId),
+    3,
+  );
+  assert.equal(
+    reopenedDatabase.prepare("SELECT COUNT(*) FROM score_events").pluck().get(),
+    1,
+  );
+
+  now = defeated.cooldownUntil;
+  assert.equal(
+    restartedAgain
+      .getRoomSnapshot(session.roomId, session.playerId)
+      .markers.find((marker) => marker.markerId === "marker-07")?.status,
+    "AVAILABLE",
   );
 });

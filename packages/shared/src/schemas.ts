@@ -51,6 +51,13 @@ export const RoomSubscribePayloadSchema = z
   .object({ roomCode: RoomCodeSchema })
   .strict();
 
+export const SocketAuthPayloadSchema = z
+  .object({
+    roomCode: RoomCodeSchema,
+    role: z.enum(["HOST", "PLAYER"]),
+  })
+  .strict();
+
 export const MarkerClaimPayloadSchema = z
   .object({
     markerId: MarkerIdSchema,

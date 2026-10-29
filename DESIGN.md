@@ -103,7 +103,7 @@ components:
 
 The interface should feel like admission to a live after-dark hunt: immediate, coded, and operational rather than promotional. Ink-black violet space, oversized bone-white instructions, precise monospace signals, and a single hot orange action establish the event atmosphere without turning the screen into Halloween decoration.
 
-The world is intentionally sparse. Fine lavender rules and translucent field-sheet surfaces organize live state while cyan marks the connection signal. The shipped login, lobby, and host views keep essential tasks prominent on narrow phones and allow the same hierarchy to breathe on desktop.
+The world is intentionally sparse. Fine lavender rules and translucent field-sheet surfaces organize live state while cyan marks the connection signal. The shipped login, lobby, host, and camera views keep essential tasks prominent on narrow phones; desktop adds breathing room where the task permits it.
 
 **Key Characteristics:**
 
@@ -227,6 +227,12 @@ Borders are one-pixel lavender-gray rules. A two-pixel orange or muted-lavender 
 ### Navigation
 
 The persistent header pairs the compact ghost-mark brand lockup with a single underlined context switch such as “Host a game” or “Player check-in.” Links have at least 44px of touch height, muted default color, a subdued lavender underline, and Bone White hover color.
+
+### Camera Viewfinder HUD
+
+The live hunt and camera-only marker test share one edge-mounted camera shell. Real camera imagery remains full-viewport while Event Night gradients fade inward from the top and bottom; the wrappers pass pointer events through so only explicit controls intercept the view.
+
+Safe-area-aware telemetry sits at the top in compact 10–11px monospace labels with larger tabular time, score, or recognition values. Guidance and the current action stay in a narrow bottom stack: 44px secondary controls, a 56px Safety Orange attack action when one is available, and an optional Raised Night diagnostic sheet with a Strong Lavender Rule and 16px corners. Status always remains written, and the center of the frame stays clear for the physical marker and ghost.
 
 ### Room Roster
 

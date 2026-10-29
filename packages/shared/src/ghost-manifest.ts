@@ -26,6 +26,7 @@ export interface GhostModelDefinition {
   skinned: boolean;
   animationClips: readonly string[];
   mobileReadiness: MobileReadiness;
+  serverSelectable: boolean;
   displayScale: number | null;
   scaleStatus: "REQUIRES_AR_CALIBRATION";
   rightsReviewStatus: "NOT_REVIEWED";
@@ -49,6 +50,7 @@ export const GHOST_MODEL_MANIFEST = [
     skinned: true,
     animationClips: [],
     mobileReadiness: "CANDIDATE",
+    serverSelectable: true,
     displayScale: null,
     scaleStatus: "REQUIRES_AR_CALIBRATION",
     rightsReviewStatus: "NOT_REVIEWED",
@@ -71,6 +73,7 @@ export const GHOST_MODEL_MANIFEST = [
     skinned: false,
     animationClips: [],
     mobileReadiness: "CANDIDATE",
+    serverSelectable: false,
     displayScale: null,
     scaleStatus: "REQUIRES_AR_CALIBRATION",
     rightsReviewStatus: "NOT_REVIEWED",
@@ -93,6 +96,7 @@ export const GHOST_MODEL_MANIFEST = [
     skinned: false,
     animationClips: [],
     mobileReadiness: "REQUIRES_OPTIMIZATION",
+    serverSelectable: false,
     displayScale: null,
     scaleStatus: "REQUIRES_AR_CALIBRATION",
     rightsReviewStatus: "NOT_REVIEWED",
@@ -115,6 +119,7 @@ export const GHOST_MODEL_MANIFEST = [
     skinned: false,
     animationClips: [],
     mobileReadiness: "CANDIDATE",
+    serverSelectable: true,
     displayScale: null,
     scaleStatus: "REQUIRES_AR_CALIBRATION",
     rightsReviewStatus: "NOT_REVIEWED",
@@ -137,6 +142,7 @@ export const GHOST_MODEL_MANIFEST = [
     skinned: false,
     animationClips: [],
     mobileReadiness: "CANDIDATE",
+    serverSelectable: true,
     displayScale: null,
     scaleStatus: "REQUIRES_AR_CALIBRATION",
     rightsReviewStatus: "NOT_REVIEWED",
@@ -159,6 +165,7 @@ export const GHOST_MODEL_MANIFEST = [
     skinned: true,
     animationClips: [],
     mobileReadiness: "REQUIRES_OPTIMIZATION",
+    serverSelectable: false,
     displayScale: null,
     scaleStatus: "REQUIRES_AR_CALIBRATION",
     rightsReviewStatus: "NOT_REVIEWED",

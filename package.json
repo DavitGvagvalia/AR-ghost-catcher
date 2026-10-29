@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "npm run build -w @ghost-hunt/shared && npm run build -w @ghost-hunt/server && npm run build -w @ghost-hunt/web && npm run build -w @ghost-hunt/gateway",
-    "dev": "concurrently -k -n web,server -c cyan,magenta \"npm run dev -w @ghost-hunt/web\" \"npm run dev -w @ghost-hunt/server\"",
+    "dev": "npm run dev:event",
     "dev:server": "npm run dev -w @ghost-hunt/server",
     "dev:web": "npm run dev -w @ghost-hunt/web",
     "dev:gateway": "npm run dev -w @ghost-hunt/gateway",
@@ -26,7 +26,7 @@
     "review:ui": "node scripts/review-auth-ui.mjs",
     "pretest": "npm run build -w @ghost-hunt/shared",
     "prevalidate:assets": "npm run build -w @ghost-hunt/shared",
-    "start": "concurrently -k -n web,server -c cyan,magenta \"npm run start -w @ghost-hunt/web\" \"npm run start -w @ghost-hunt/server\"",
+    "start": "npm run start:event",
     "start:event": "concurrently -k -n web,server,gateway -c cyan,magenta,yellow \"npm run start -w @ghost-hunt/web\" \"npm run start -w @ghost-hunt/server\" \"npm run start -w @ghost-hunt/gateway\"",
     "test": "node --test tests/integration/assets.test.mjs && npm run test --workspaces --if-present",
     "validate:assets": "node --test tests/integration/assets.test.mjs",

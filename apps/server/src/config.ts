@@ -19,6 +19,17 @@ if (existsSync(rootEnvironmentPath)) {
 }
 
 const positiveInteger = z.coerce.number().int().positive();
+const exactHttpOrigin = z
+  .string()
+  .trim()
+  .url()
+  .refine((value) => {
+    const url = new URL(value);
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      value === url.origin
+    );
+  }, "PUBLIC_ORIGIN must be an exact HTTP(S) origin without a trailing slash or path");
 
 const serverConfigSchema = z
   .object({
@@ -26,7 +37,7 @@ const serverConfigSchema = z
       .enum(["development", "test", "production"])
       .default("development"),
     API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
-    PUBLIC_ORIGIN: z.url().default("http://localhost:3000"),
+    PUBLIC_ORIGIN: exactHttpOrigin.default("http://localhost:8080"),
     DATABASE_PATH: z.string().trim().min(1).default("./data/game.sqlite"),
     MATCH_DURATION_MS: positiveInteger.default(MATCH_DURATION_MS),
     MARKER_COOLDOWN_MS: positiveInteger.default(MARKER_COOLDOWN_MS),

@@ -36,16 +36,17 @@ export async function createTestRuntime(
   roomServiceOptions: RoomServiceOptions = {},
   encounterServiceOptions: EncounterServiceOptions = {},
   socketRateLimitOptions: SocketRateLimitOptions = {},
+  databasePath = ":memory:",
 ): Promise<TestRuntime> {
-  const database = openDatabase({ path: ":memory:" });
+  const database = openDatabase({ path: databasePath });
   const encounterService = new EncounterService(database, {
     ...(roomServiceOptions.now ? { now: roomServiceOptions.now } : {}),
     ...encounterServiceOptions,
   });
-  const roomService = new RoomService(
-    new RoomRepository(database),
-    { ...roomServiceOptions, encounterService },
-  );
+  const roomService = new RoomService(new RoomRepository(database), {
+    ...roomServiceOptions,
+    encounterService,
+  });
   const roomEvents = new RoomEvents();
   const server = createServer(
     createApp(database, {

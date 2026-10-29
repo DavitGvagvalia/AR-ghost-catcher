@@ -61,16 +61,25 @@ interface ArHuntSceneProps {
 let aframePromise: Promise<void> | null = null;
 let arjsPromise: Promise<void> | null = null;
 
-function loadBrowserScript(source: string, globalReady: () => boolean): Promise<void> {
+function loadBrowserScript(
+  source: string,
+  globalReady: () => boolean,
+): Promise<void> {
   if (globalReady()) return Promise.resolve();
 
-  const existing = document.querySelector<HTMLScriptElement>(`script[src="${source}"]`);
+  const existing = document.querySelector<HTMLScriptElement>(
+    `script[src="${source}"]`,
+  );
   if (existing) {
     return new Promise((resolve, reject) => {
       existing.addEventListener("load", () => resolve(), { once: true });
-      existing.addEventListener("error", () => reject(new Error(`Unable to load ${source}`)), {
-        once: true,
-      });
+      existing.addEventListener(
+        "error",
+        () => reject(new Error(`Unable to load ${source}`)),
+        {
+          once: true,
+        },
+      );
     });
   }
 
@@ -99,9 +108,8 @@ async function loadArRuntime(): Promise<void> {
     () => Boolean(arWindow.AFRAME),
   );
   await aframePromise;
-  arjsPromise ??= loadBrowserScript(
-    "/vendor/arjs/aframe-ar-3.4.8.js",
-    () => Boolean(arWindow.AFRAME?.components?.arjs),
+  arjsPromise ??= loadBrowserScript("/vendor/arjs/aframe-ar-3.4.8.js", () =>
+    Boolean(arWindow.AFRAME?.components?.arjs),
   );
   await arjsPromise;
 }
@@ -114,7 +122,7 @@ function createFallbackGhost(): HTMLElement {
   body.setAttribute("radius", "0.34");
   body.setAttribute("scale", "1 1.22 0.82");
   body.setAttribute("position", "0 0.44 0");
-  body.setAttribute("material", "color: #dcd4ff; roughness: 0.78");
+  body.setAttribute("material", "color: #d4ccdc; roughness: 0.78");
   group.append(body);
 
   for (const x of [-0.13, 0.13]) {
@@ -144,6 +152,10 @@ function normalizeModel(model: AFrameEntity): boolean {
   return true;
 }
 
+function prefersReducedMotion(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 function stopInjectedCamera(): void {
   for (const video of document.querySelectorAll<HTMLVideoElement>("video")) {
     const stream = video.srcObject;
@@ -171,7 +183,12 @@ export function ArHuntScene({
   const ghostRootRef = useRef<HTMLElement | null>(null);
   const encounterRef = useRef(activeEncounter);
   const disabledRef = useRef(disabled);
-  const callbacksRef = useRef({ onMarkerStable, onMarkerVisibility, onAttack, onRuntimeState });
+  const callbacksRef = useRef({
+    onMarkerStable,
+    onMarkerVisibility,
+    onAttack,
+    onRuntimeState,
+  });
   const [runtimeError, setRuntimeError] = useState(false);
   const [sceneReadyToken, setSceneReadyToken] = useState(0);
 
@@ -184,7 +201,12 @@ export function ArHuntScene({
   }, [disabled]);
 
   useEffect(() => {
-    callbacksRef.current = { onMarkerStable, onMarkerVisibility, onAttack, onRuntimeState };
+    callbacksRef.current = {
+      onMarkerStable,
+      onMarkerVisibility,
+      onAttack,
+      onRuntimeState,
+    };
   }, [onAttack, onMarkerStable, onMarkerVisibility, onRuntimeState]);
 
   useEffect(() => {
@@ -206,7 +228,10 @@ export function ArHuntScene({
         const scene = document.createElement("a-scene") as ArSceneElement;
         scene.setAttribute("embedded", "");
         scene.setAttribute("vr-mode-ui", "enabled: false");
-        scene.setAttribute("renderer", "antialias: true; alpha: true; precision: medium");
+        scene.setAttribute(
+          "renderer",
+          "antialias: true; alpha: true; precision: medium",
+        );
         scene.setAttribute(
           "arjs",
           "sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; maxDetectionRate: 30",
@@ -236,13 +261,18 @@ export function ArHuntScene({
 
               const timer = window.setTimeout(() => {
                 stableTimers.delete(timer);
-                if (disposed || encounterRef.current || disabledRef.current) return;
+                if (disposed || encounterRef.current || disabledRef.current)
+                  return;
                 if (!visibleMarkers.has(definition.id)) return;
 
                 const stableCandidates = [...visibleMarkers.entries()]
-                  .filter(([, timestamp]) => performance.now() - timestamp >= STABLE_MARKER_MS)
+                  .filter(
+                    ([, timestamp]) =>
+                      performance.now() - timestamp >= STABLE_MARKER_MS,
+                  )
                   .sort(([leftId, leftTime], [rightId, rightTime]) => {
-                    if (leftTime === rightTime) return leftId.localeCompare(rightId);
+                    if (leftTime === rightTime)
+                      return leftId.localeCompare(rightId);
                     return rightTime - leftTime;
                   });
                 const selected = stableCandidates[0]?.[0];
@@ -276,15 +306,17 @@ export function ArHuntScene({
             const deadline = performance.now() + 10_000;
             const confirmRuntimeReady = (): void => {
               if (disposed) return;
-              const video = [...document.querySelectorAll<HTMLVideoElement>("video")].find(
-                (candidate) => {
-                  const stream = candidate.srcObject;
-                  return (
-                    stream instanceof MediaStream &&
-                    stream.getVideoTracks().some((track) => track.readyState === "live")
-                  );
-                },
-              );
+              const video = [
+                ...document.querySelectorAll<HTMLVideoElement>("video"),
+              ].find((candidate) => {
+                const stream = candidate.srcObject;
+                return (
+                  stream instanceof MediaStream &&
+                  stream
+                    .getVideoTracks()
+                    .some((track) => track.readyState === "live")
+                );
+              });
               const arSystem = scene.systems?.arjs ?? scene.systems?.artoolkit;
               if (video && arSystem?._arProfile) {
                 video.playsInline = true;
@@ -356,7 +388,7 @@ export function ArHuntScene({
 
     const root = document.createElement("a-entity");
     root.setAttribute("position", "0 0.06 0");
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (!prefersReducedMotion()) {
       root.setAttribute(
         "animation__float",
         "property: position; from: 0 0.06 0; to: 0 0.16 0; dir: alternate; dur: 1150; loop: true; easing: easeInOutSine",
@@ -387,7 +419,10 @@ export function ArHuntScene({
     hitTarget.setAttribute("width", "0.9");
     hitTarget.setAttribute("height", "1");
     hitTarget.setAttribute("depth", "0.7");
-    hitTarget.setAttribute("material", "transparent: true; opacity: 0.001; depthWrite: false");
+    hitTarget.setAttribute(
+      "material",
+      "transparent: true; opacity: 0.001; depthWrite: false",
+    );
     hitTarget.addEventListener("click", () => {
       if (!disabledRef.current) callbacksRef.current.onAttack();
     });
@@ -409,15 +444,22 @@ export function ArHuntScene({
 
   useEffect(() => {
     const ghost = ghostRootRef.current;
-    if (!ghost || hitSignal === 0) return;
+    if (!ghost || hitSignal === 0 || prefersReducedMotion()) return;
     ghost.setAttribute("scale", "1.14 0.88 1.14");
-    const timer = window.setTimeout(() => ghost.setAttribute("scale", "1 1 1"), 110);
+    const timer = window.setTimeout(
+      () => ghost.setAttribute("scale", "1 1 1"),
+      110,
+    );
     return () => window.clearTimeout(timer);
   }, [hitSignal]);
 
   useEffect(() => {
     const ghost = ghostRootRef.current;
     if (!ghost || defeatSignal === 0) return;
+    if (prefersReducedMotion()) {
+      ghost.setAttribute("visible", "false");
+      return;
+    }
     ghost.setAttribute(
       "animation__defeat",
       "property: scale; from: 1 1 1; to: 0.08 1.45 0.08; dur: 480; easing: easeInBack",
@@ -429,7 +471,11 @@ export function ArHuntScene({
   }, [defeatSignal]);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 z-0 overflow-hidden bg-[#09070f]" aria-hidden="true">
+    <div
+      ref={containerRef}
+      className="absolute inset-0 z-0 overflow-hidden bg-[#09070f]"
+      aria-hidden="true"
+    >
       {runtimeError ? (
         <div className="grid h-full place-items-center px-8 text-center text-[#ffb36b]">
           The AR runtime could not start. Use Resume camera to try again.

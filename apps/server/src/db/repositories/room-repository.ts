@@ -251,11 +251,7 @@ export class RoomRepository {
     this.#database.prepare("UPDATE players SET is_connected = 0").run();
   }
 
-  startMatch(
-    roomId: string,
-    startedAt: number,
-    endsAt: number,
-  ): boolean {
+  startMatch(roomId: string, startedAt: number, endsAt: number): boolean {
     const result = this.#database
       .prepare(
         `UPDATE rooms
