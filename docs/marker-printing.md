@@ -12,9 +12,21 @@ python -m pip install --requirement scripts/markers/requirements.txt
 With that environment active, verify and regenerate the print deliverable:
 
 ```bash
+npm run markers:patterns
 npm run validate:assets
 npm run markers:pdf
 ```
+
+With the local game running and Google Chrome installed, verify that the real
+AR.js browser runtime recognizes `marker-01` from a deterministic fake-camera
+video:
+
+```bash
+npm run review:marker
+```
+
+This isolates the browser pattern pipeline from physical print, lighting, and
+phone-camera variables. It does not replace the physical acceptance record.
 
 The generated file is `output/pdf/ghost-hunt-marker-pack.pdf`.
 
@@ -25,10 +37,11 @@ The generated file is `output/pdf/ghost-hunt-marker-pack.pdf`.
   the range 0–255, matching the structure of the official AR.js example.
 - The 30 pattern files have distinct SHA-256 hashes and are not exact duplicates
   under any stored rotation.
-- Each JPEG downsamples to the first orientation in its paired pattern, verifying
-  the manifest pairing.
+- The central 50% inner image of each JPEG downsamples to the first orientation
+  in its paired pattern, verifying the manifest pairing and keeping the black
+  border out of the encoded `.patt` data as required by the AR.js generator.
 - The closest pair under the repository's rotation-invariant mean absolute
-  difference metric is `marker-16` / `marker-28` at 12.47.
+  difference metric is `marker-16` / `marker-18` at 100.61.
 - The PDF contains a labeled contact sheet, 15 placement sheets with two 90 mm
   markers per page, a 100 mm print-calibration bar, and a closest-pair test page.
 
@@ -59,7 +72,7 @@ Android phones at realistic placement sizes, distances, angles, and lighting.
 Also record:
 
 - false positives or incorrect IDs;
-- `marker-16` and `marker-28` individually and visible together;
+- `marker-16` and `marker-18` individually and visible together;
 - several markers visible at once;
 - two phones claiming the same marker simultaneously;
 - glare, motion blur, damaged print, and low-light behavior.

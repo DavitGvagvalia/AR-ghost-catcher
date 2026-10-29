@@ -60,7 +60,7 @@ The software and generated assets are reproducibly testable, but event readiness
 is not proven until the organizer completes the real-device and physical checks:
 
 - recognize every printed marker on target iPhones and Android phones;
-- test `marker-16` and `marker-28` together, multiple markers in view, and
+- test `marker-16` and `marker-18` together, multiple markers in view, and
   simultaneous two-phone claims;
 - rehearse camera interruption, network recovery, the final ngrok origin, and a
   continuous 30-minute match;

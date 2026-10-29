@@ -12,8 +12,23 @@ const rootEnvironmentPath = resolve(repositoryRoot, ".env");
 
 if (existsSync(rootEnvironmentPath)) loadEnvFile(rootEnvironmentPath);
 
+const webPort = process.env.WEB_PORT ?? "3000";
+const publicOrigin = new URL(
+  process.env.PUBLIC_ORIGIN ?? "http://localhost:8080",
+).origin;
+const directWebHosts = [`localhost:${webPort}`, `127.0.0.1:${webPort}`];
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    if (directWebHosts.includes(new URL(publicOrigin).host)) return [];
+    return directWebHosts.map((host) => ({
+      source: "/:path*",
+      has: [{ type: "header" as const, key: "host", value: host }],
+      destination: `${publicOrigin}/:path*`,
+      permanent: false,
+    }));
+  },
   async headers() {
     return [
       {

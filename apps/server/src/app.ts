@@ -23,7 +23,7 @@ export function createApp(
   options: CreateAppOptions = {},
 ): express.Express {
   const app = express();
-  const publicOrigin = options.publicOrigin ?? "http://localhost:3000";
+  const publicOrigin = options.publicOrigin ?? "http://localhost:8080";
   const roomService =
     options.roomService ??
     new RoomService(new RoomRepository(database), {
@@ -97,6 +97,20 @@ export function createApp(
         error: {
           code: "MALFORMED_JSON",
           message: "The request body is not valid JSON.",
+        },
+      });
+      return;
+    }
+
+    if (
+      error instanceof Error &&
+      "type" in error &&
+      error.type === "entity.too.large"
+    ) {
+      response.status(413).json({
+        error: {
+          code: "PAYLOAD_TOO_LARGE",
+          message: "The request body is too large.",
         },
       });
       return;

@@ -236,7 +236,7 @@ def closest_pair_page(pdf: Canvas, page_number: int) -> None:
     draw_header(
         pdf,
         "Closest-pair recognition check",
-        "The automated comparison found marker-16 and marker-28 closest; this is not a camera pass/fail result.",
+        "The automated comparison found marker-16 and marker-18 closest; this is not a camera pass/fail result.",
     )
     marker_size = 72 * mm
     gap = 18 * mm
@@ -244,7 +244,7 @@ def closest_pair_page(pdf: Canvas, page_number: int) -> None:
     start_x = (PAGE_WIDTH - total_width) / 2
     y = PAGE_HEIGHT - 125 * mm
     draw_marker_card(pdf, 16, start_x, y, marker_size, False)
-    draw_marker_card(pdf, 28, start_x + marker_size + gap, y, marker_size, False)
+    draw_marker_card(pdf, 18, start_x + marker_size + gap, y, marker_size, False)
 
     pdf.setFillColor(INK)
     pdf.setFont("Helvetica-Bold", 12)

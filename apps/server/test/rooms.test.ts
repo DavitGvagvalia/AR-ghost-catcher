@@ -160,3 +160,32 @@ test("state-changing requests reject an untrusted browser origin", async (t) => 
   assert.equal(response.status, 403);
   assert.equal(body.error.code, "ORIGIN_FORBIDDEN");
 });
+
+test("malformed and oversized JSON receive structured client errors", async (t) => {
+  const runtime = await createTestRuntime();
+  t.after(runtime.close);
+
+  const malformed = await fetch(`${runtime.baseUrl}/api/rooms`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Origin: TEST_ORIGIN,
+    },
+    body: "{",
+  });
+  const malformedBody = (await malformed.json()) as ApiErrorResponse;
+  assert.equal(malformed.status, 400);
+  assert.equal(malformedBody.error.code, "MALFORMED_JSON");
+
+  const oversized = await fetch(`${runtime.baseUrl}/api/rooms`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Origin: TEST_ORIGIN,
+    },
+    body: JSON.stringify({ padding: "x".repeat(17 * 1_024) }),
+  });
+  const oversizedBody = (await oversized.json()) as ApiErrorResponse;
+  assert.equal(oversized.status, 413);
+  assert.equal(oversizedBody.error.code, "PAYLOAD_TOO_LARGE");
+});

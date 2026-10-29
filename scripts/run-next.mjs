@@ -1,4 +1,4 @@
-/* global console, process */
+/* global console, process, URL */
 
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -18,6 +18,12 @@ const port = Number(process.env.WEB_PORT ?? "3000");
 if (!Number.isInteger(port) || port < 1 || port > 65_535) {
   throw new Error("WEB_PORT must be an integer from 1 through 65535");
 }
+const publicOrigin = new URL(
+  process.env.PUBLIC_ORIGIN ?? "http://localhost:8080",
+).origin;
+console.log(
+  `Open ${publicOrigin}; port ${port} is the private Next.js upstream.`,
+);
 
 const nextCli = resolve(repositoryRoot, "node_modules/next/dist/bin/next");
 const child = spawn(

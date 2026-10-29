@@ -125,20 +125,24 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
     if (roomState.room.status === "LOBBY") {
       router.replace(`/lobby?room=${roomState.room.code}`);
     }
-    if (roomState.room.status === "FINISHED") router.replace("/results");
+    if (roomState.room.status === "FINISHED") {
+      router.replace(
+        `/results?room=${encodeURIComponent(roomState.room.code)}`,
+      );
+    }
   }, [roomState.room.code, roomState.room.status, router]);
 
   useEffect(() => {
-    if (cameraPhase !== "ACTIVE") return;
+    if (cameraPhase !== "ACTIVE" || runtimeState !== "READY") return;
     const checkCamera = (): void => {
       if (document.visibilityState !== "visible") return;
       const stream = document.querySelector<HTMLVideoElement>(
         "video[data-ghost-hunt-camera]",
       )?.srcObject;
-      if (!(stream instanceof MediaStream)) return;
-      if (
-        stream.getVideoTracks().every((track) => track.readyState === "ended")
-      ) {
+      const hasLiveTrack =
+        stream instanceof MediaStream &&
+        stream.getVideoTracks().some((track) => track.readyState === "live");
+      if (!hasLiveTrack) {
         setCameraError(
           "The camera stopped while the hunt was interrupted. Resume it to continue.",
         );
@@ -151,7 +155,7 @@ export function LiveGameStatus({ initialState }: { initialState: RoomState }) {
       document.removeEventListener("visibilitychange", checkCamera);
       window.removeEventListener("pageshow", checkCamera);
     };
-  }, [cameraPhase]);
+  }, [cameraPhase, runtimeState]);
 
   useEffect(
     () => () => {

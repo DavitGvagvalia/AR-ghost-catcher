@@ -261,8 +261,7 @@ export function ArHuntScene({
 
               const timer = window.setTimeout(() => {
                 stableTimers.delete(timer);
-                if (disposed || encounterRef.current || disabledRef.current)
-                  return;
+                if (disposed || encounterRef.current) return;
                 if (!visibleMarkers.has(definition.id)) return;
 
                 const stableCandidates = [...visibleMarkers.entries()]
@@ -295,6 +294,7 @@ export function ArHuntScene({
         };
 
         const camera = document.createElement("a-entity");
+        camera.setAttribute("scale","0.1 0.1 0.1")
         camera.setAttribute("camera", "");
         camera.setAttribute("cursor", "rayOrigin: mouse; fuse: false");
         camera.setAttribute("raycaster", "objects: .attackable; far: 20");

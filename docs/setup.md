@@ -41,6 +41,10 @@ npm run dev
 Open `http://localhost:8080`, not the upstream ports. The gateway presents one
 origin and routes requests as follows:
 
+Direct local navigation to the private Next.js port redirects to the configured
+`PUBLIC_ORIGIN`. Existing tabs that were already open on port 3000 before the
+services started should be reloaded once so the redirect can take effect.
+
 | Public path                      | Upstream                    |
 | -------------------------------- | --------------------------- |
 | `/api`, `/api/*`, `/socket.io/*` | Express at `127.0.0.1:3001` |
@@ -119,6 +123,34 @@ curl --fail --silent http://localhost:8080/api/health
 
 A ready response includes `status: "ok"`, `database: "ready"`, and a
 server-generated Unix epoch timestamp.
+
+### Compiled browser rehearsal
+
+The authenticated browser script uses a fake camera stream to exercise room
+creation, player join, Socket.IO updates, AR startup, camera interruption and
+recovery, marker-test startup, the authoritative deadline, host finalization,
+and both results views. It does not replace printed-marker or real-phone QA.
+
+After `npm run build`, start a short-lived production rehearsal in one terminal:
+
+```bash
+NODE_ENV=production \
+PUBLIC_ORIGIN=http://localhost:8080 \
+NEXT_PUBLIC_API_ORIGIN= \
+DATABASE_PATH=/private/tmp/ar-ghost-browser-rehearsal.sqlite \
+MATCH_DURATION_MS=25000 \
+npm run start
+```
+
+Then run this in another terminal:
+
+```bash
+REVIEW_BASE_URL=http://localhost:8080 REVIEW_FINALIZE=true npm run review:ui
+```
+
+Stop the services after the script reports success. The rehearsal requires
+Google Chrome at the default macOS path, or a compatible binary supplied with
+`CHROME_PATH`.
 
 ## Security and scope
 

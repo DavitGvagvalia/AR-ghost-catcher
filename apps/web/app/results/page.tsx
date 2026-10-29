@@ -1,23 +1,42 @@
 "use client";
 
 import type { FinalResults } from "@ghost-hunt/shared";
-import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 import { Brand } from "@/components/ui/brand";
 import { useStoredRoom } from "@/hooks/use-stored-room";
 import { getResults } from "@/lib/api";
 
-export default function ResultsPage() {
-  const { roomCode, ready: roomMemoryReady } = useStoredRoom("PLAYER_OR_HOST");
-  const [results, setResults] = useState<FinalResults | null>(null);
-  const [error, setError] = useState<string | null>(null);
+function ResultsContent() {
+  const params = useSearchParams();
+  const queryRoomCode = params.get("room");
+  const { roomCode: storedRoomCode, ready: roomMemoryReady } =
+    useStoredRoom("PLAYER_OR_HOST");
+  const roomCode = queryRoomCode ?? storedRoomCode;
+  const roomReferenceReady = queryRoomCode !== null || roomMemoryReady;
+  const [load, setLoad] = useState<{
+    roomCode: string;
+    results: FinalResults | null;
+    error: string | null;
+  } | null>(null);
+
   useEffect(() => {
     if (!roomCode) return;
     getResults(roomCode)
-      .then(setResults)
-      .catch(() => setError("The final standings are not published yet."));
+      .then((results) => setLoad({ roomCode, results, error: null }))
+      .catch(() =>
+        setLoad({
+          roomCode,
+          results: null,
+          error: "The final standings are not published yet.",
+        }),
+      );
   }, [roomCode]);
 
+  const currentLoad = load?.roomCode === roomCode ? load : null;
+  const results = currentLoad?.results ?? null;
+  const error = currentLoad?.error ?? null;
   const leaderboard = useMemo(() => results?.leaderboard ?? [], [results]);
 
   return (
@@ -29,7 +48,7 @@ export default function ResultsPage() {
         </span>
       </header>
       <main className="mx-auto w-full max-w-4xl flex-1 px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-14 sm:px-8">
-        {roomMemoryReady && (error || !roomCode) ? (
+        {roomReferenceReady && (error || !roomCode) ? (
           <p role="alert" className="text-[#ffb36b]">
             {error ?? "No room is stored on this device."}
           </p>
@@ -75,5 +94,21 @@ export default function ResultsPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function ResultsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="grid min-h-dvh place-items-center">
+          <p role="status" className="text-[#b9a4ff]">
+            Loading final standings…
+          </p>
+        </main>
+      }
+    >
+      <ResultsContent />
+    </Suspense>
   );
 }

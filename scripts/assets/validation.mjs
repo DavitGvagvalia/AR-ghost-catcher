@@ -7,6 +7,7 @@ const PATTERN_ROTATIONS = 4;
 const PATTERN_CHANNELS = 3;
 const PATTERN_SIDE = 16;
 const PATTERN_ROWS = PATTERN_ROTATIONS * PATTERN_CHANNELS * PATTERN_SIDE;
+const INNER_PATTERN_RATIO = 0.5;
 
 export function sha256(buffer) {
   return createHash("sha256").update(buffer).digest("hex");
@@ -88,11 +89,26 @@ export function minimumRotationMae(first, second) {
 export async function comparePrintableToPattern(imagePath, pattern) {
   const image = sharp(imagePath);
   const metadata = await image.metadata();
+  if (
+    !metadata.width ||
+    !metadata.height ||
+    metadata.width !== metadata.height
+  ) {
+    throw new Error(`${imagePath}: printable marker must be square`);
+  }
+  const innerSize = metadata.width * INNER_PATTERN_RATIO;
+  const innerOffset = (metadata.width - innerSize) / 2;
   const pixels = await image
+    .extract({
+      left: innerOffset,
+      top: innerOffset,
+      width: innerSize,
+      height: innerSize,
+    })
     .grayscale()
     .resize(PATTERN_SIDE, PATTERN_SIDE, {
       fit: "fill",
-      kernel: "lanczos3",
+      kernel: "nearest",
     })
     .raw()
     .toBuffer();

@@ -20,8 +20,12 @@ export function LiveLobby({ initialState }: { initialState: RoomState }) {
 
   useEffect(() => {
     if (roomState.room.status === "RUNNING") router.replace("/game");
-    if (roomState.room.status === "FINISHED") router.replace("/results");
-  }, [roomState.room.status, router]);
+    if (roomState.room.status === "FINISHED") {
+      router.replace(
+        `/results?room=${encodeURIComponent(roomState.room.code)}`,
+      );
+    }
+  }, [roomState.room.code, roomState.room.status, router]);
 
   return (
     <main className="mx-auto grid w-full max-w-5xl flex-1 content-start gap-10 px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-10 sm:px-8 lg:grid-cols-[1fr_1.15fr] lg:gap-20 lg:pt-20">

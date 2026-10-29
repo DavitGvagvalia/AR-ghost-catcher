@@ -222,7 +222,7 @@ export function HostRoom({ initialState }: { initialState: RoomState }) {
             <>
               <h2 className="text-xl font-extrabold">Results published</h2>
               <Link
-                href="/results"
+                href={`/results?room=${encodeURIComponent(roomState.room.code)}`}
                 className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[#ff7a1a] px-5 font-extrabold text-[#120b06]"
               >
                 View final standings

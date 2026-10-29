@@ -1,11 +1,12 @@
-/* global console, document, getComputedStyle, MediaStream, process */
+/* global console, document, getComputedStyle, MediaStream, process, window */
 
 import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { chromium } from "playwright-core";
 
-const baseUrl = process.env.REVIEW_BASE_URL ?? "http://localhost:3000";
+const baseUrl = process.env.REVIEW_BASE_URL ?? "http://localhost:8080";
+const finalizeMatch = process.env.REVIEW_FINALIZE === "true";
 const chromePath =
   process.env.CHROME_PATH ??
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
@@ -192,6 +193,37 @@ try {
   await player.screenshot({
     path: resolve(outputDirectory, "mobile-game.png"),
   });
+
+  await player.evaluate(() => {
+    const video = document.querySelector("video[data-ghost-hunt-camera]");
+    const stream = video?.srcObject;
+    if (!(stream instanceof MediaStream)) {
+      throw new Error("No owned AR stream was available for recovery testing.");
+    }
+    for (const track of stream.getTracks()) track.stop();
+    window.dispatchEvent(new window.PageTransitionEvent("pageshow"));
+  });
+  await player
+    .getByText(
+      "The camera stopped while the hunt was interrupted. Resume it to continue.",
+    )
+    .waitFor();
+  await player.getByRole("button", { name: "Try camera again" }).click();
+  await player
+    .getByText("Hold a printed marker steady in the frame.")
+    .waitFor({ timeout: 15_000 });
+  const resumedCamera = await player.evaluate(() => {
+    const stream = document.querySelector(
+      "video[data-ghost-hunt-camera]",
+    )?.srcObject;
+    return (
+      stream instanceof MediaStream &&
+      stream.getVideoTracks().some((track) => track.readyState === "live")
+    );
+  });
+  if (!resumedCamera) {
+    throw new Error("AR camera did not resume with a live video track.");
+  }
   await host.screenshot({
     path: resolve(outputDirectory, "desktop-host-running.png"),
   });
@@ -241,8 +273,30 @@ try {
     );
   }
 
+  if (finalizeMatch) {
+    await host
+      .getByRole("heading", { name: "Time is up" })
+      .waitFor({ timeout: 60_000 });
+    await host
+      .getByRole("button", { name: "End game and publish results" })
+      .click();
+    await host.getByRole("heading", { name: "Results published" }).waitFor();
+    await host.getByRole("link", { name: "View final standings" }).click();
+    await host.waitForURL(new RegExp(`/results\\?room=${roomCode}$`));
+    await host
+      .getByRole("heading", { name: "The ghosts have spoken." })
+      .waitFor();
+    await host.getByText(`Final standings for room ${roomCode}`).waitFor();
+
+    await player.waitForURL(new RegExp(`/results\\?room=${roomCode}$`));
+    await player
+      .getByRole("heading", { name: "The ghosts have spoken." })
+      .waitFor();
+    await player.getByText("Review Hunter").waitFor();
+  }
+
   console.log(
-    `Reviewed room ${roomCode}: host create, player join, live roster, synchronized start, camera, and marker-test runtime passed.`,
+    `Reviewed room ${roomCode}: host create, player join, live roster, synchronized start, camera recovery, marker-test runtime${finalizeMatch ? ", deadline, finalization, and results" : ""} passed.`,
   );
   await Promise.all([
     mobile.close(),

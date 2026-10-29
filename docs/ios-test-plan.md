@@ -25,7 +25,7 @@ For every run, record:
 4. Scan all 30 markers individually. Confirm the displayed marker ID matches the
    printed label and no other ID claims.
 5. For each marker, test near/far distance, at least three viewing angles, bright
-   and dim lighting, and partial occlusion. Exercise `marker-16` and `marker-28`
+   and dim lighting, and partial occlusion. Exercise `marker-16` and `marker-18`
    together because they are the closest measured pattern pair.
 6. Put two and then several markers in view. Confirm one deterministic claim is
    made and repeated detection events do not create duplicate encounters.
